@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SC-900 問題集(参考書ベース)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220; --surface:#141B2E; --surface2:#1B2338; --line:#2A3550;
+    --text:#E5E9F5; --muted:#8892B0; --ok:#34D399; --ok-dim:#0F3D30;
+    --bad:#F87171; --bad-dim:#4A1E22;
+    --c1:#A78BFA; --c2:#38BDF8; --c3:#34D399; --c4:#FBBF24; --c5:#FB7185; --c6:#60A5FA;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #17203A 0%, var(--bg) 55%);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
+  .hdr{margin-bottom:18px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin:4px 0 6px;letter-spacing:-0.01em;}
+  .sub{color:var(--muted);font-size:13.5px;line-height:1.6;}
+  .card{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px;}
+  .domainbtn{width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:14px 16px;margin-bottom:9px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;}
+  .domainbtn b{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .domainbtn .count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;margin-left:10px;}
+  .progressrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .progressbar{flex:1;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
+  .progressfill{height:100%;background:var(--ok);transition:width .3s ease;}
+  .qcount{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:4px 9px;border-radius:6px;margin-bottom:12px;letter-spacing:.04em;}
+  .qtext{font-size:16px;line-height:1.55;margin-bottom:16px;font-weight:500;}
+  .choice{width:100%;text-align:left;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:13.5px;font-family:'Inter',sans-serif;cursor:pointer;line-height:1.45;display:flex;align-items:flex-start;gap:8px;}
+  .choice .box{flex-shrink:0;width:16px;height:16px;border-radius:5px;border:1.5px solid var(--muted);margin-top:2px;}
+  .choice.correct{background:var(--ok-dim);border-color:var(--ok);}
+  .choice.wrong{background:var(--bad-dim);border-color:var(--bad);}
+  .choice.disabled{pointer-events:none;}
+  .choice.checked .box{background:var(--text);}
+  .cnote{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5;display:none;}
+  .choice.revealed .cnote{display:block;}
+  .tfrow{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;background:var(--surface2);}
+  .tftext{font-size:13.5px;line-height:1.5;margin-bottom:9px;}
+  .tfbtns{display:flex;gap:8px;}
+  .tfbtn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12.5px;cursor:pointer;}
+  .tfbtn.sel{border-color:var(--text);}
+  .tfrow.correct{border-color:var(--ok);}
+  .tfrow.wrong{border-color:var(--bad);}
+  .tfbtn.correct{background:var(--ok-dim);border-color:var(--ok);}
+  .tfbtn.wrong{background:var(--bad-dim);border-color:var(--bad);}
+  .tfnote{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;display:none;}
+  .tfrow.revealed .tfnote{display:block;}
+  .submitbtn{width:100%;background:var(--text);color:#0B1220;border:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;padding:12px;border-radius:12px;cursor:pointer;margin-top:6px;display:none;}
+  .nextbtn{width:100%;margin-top:14px;background:var(--text);color:#0B1220;border:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;padding:13px;border-radius:12px;cursor:pointer;display:none;}
+  .ring{width:120px;height:120px;margin:6px auto 0;position:relative;}
+  .ringnum{position:relative;margin-top:-134px;margin-bottom:22px;display:flex;flex-direction:column;align-items:center;}
+  .ringnum .pct{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;}
+  .ringnum .lbl{font-size:10.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+  .brow{margin-bottom:12px;}
+  .browtop{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+  .browtop .nm{font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .brack{height:7px;border-radius:99px;background:var(--surface2);overflow:hidden;}
+  .brfill{height:100%;border-radius:99px;}
+  .retrybtn{width:100%;margin-top:14px;background:transparent;color:var(--text);border:1px solid var(--line);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;padding:13px;border-radius:12px;cursor:pointer;}
+  .hide{display:none;}
+
+  .domainbtn{transition:border-color .15s, background .15s;}
+  .domainbtn .pct{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;margin-left:7px;white-space:nowrap;}
+  .domainbtn.score-gray .pct{background:var(--surface);color:var(--muted);border:1px solid var(--line);}
+  .domainbtn.score-green{border-color:var(--ok);background:linear-gradient(180deg,#12291F,var(--surface2));}
+  .domainbtn.score-green .pct{background:var(--ok-dim);color:var(--ok);}
+  .domainbtn.score-yellow{border-color:#FBBF24;background:linear-gradient(180deg,#2E260C,var(--surface2));}
+  .domainbtn.score-yellow .pct{background:#3A2E0C;color:#FBBF24;}
+  .domainbtn.score-red{border-color:var(--bad);background:linear-gradient(180deg,#2E1416,var(--surface2));}
+  .domainbtn.score-red .pct{background:var(--bad-dim);color:var(--bad);}
+
+  .reviewbtn{width:100%;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#3A2233,#241521);border:1px solid #6B3550;color:var(--text);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;}
+  .reviewbtn b{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .reviewbtn .count{font-family:'JetBrains Mono',monospace;font-size:11px;color:#F5B8CE;white-space:nowrap;margin-left:10px;}
+  .reviewbtn.disabled{opacity:.4;pointer-events:none;}
+
+  .resumebtn{width:100%;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#12283A,#141B2E);border:1px solid #2E6B9E;color:var(--text);border-radius:12px;padding:14px 16px;margin-bottom:10px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;}
+  .resumebtn b{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .resumebtn .sub2{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7EC1F2;margin-top:2px;}
+
+  #quizScreen{position:relative;}
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .homebtn{flex-shrink:0;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+  .bigmark{position:absolute;top:14px;right:16px;font-size:38px;line-height:1;opacity:0;transform:scale(0.4);pointer-events:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));z-index:5;}
+  .bigmark.show{animation:markpop .5s cubic-bezier(.34,1.56,.64,1) forwards;}
+  @keyframes markpop{0%{opacity:0;transform:scale(0.3) rotate(-8deg);}60%{opacity:1;transform:scale(1.2) rotate(3deg);}100%{opacity:1;transform:scale(1) rotate(0);}}
+
+  .achieveOverlay{position:fixed;inset:0;background:rgba(6,9,18,.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:999;padding:24px;}
+  .achieveOverlay.hide{display:none;}
+  .achieveCard{background:linear-gradient(180deg,#1B2338,#141B2E);border:1px solid #FBBF24;border-radius:20px;padding:32px 24px;text-align:center;max-width:340px;animation:achievepop .5s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes achievepop{0%{opacity:0;transform:scale(.7);}100%{opacity:1;transform:scale(1);}}
+  .achieveCard .trophy{font-size:54px;margin-bottom:10px;}
+  .achieveCard h2{font-family:'Space Grotesk',sans-serif;font-size:20px;margin:0 0 8px;}
+  .achieveCard p{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px;}
+  .achieveCard button{background:#FBBF24;color:#241a02;border:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;padding:11px 22px;border-radius:10px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="eyebrow">SC-900 対策 &middot; 参考書ベース問題集</div>
+    <h1>実践問題集(第1〜6章)</h1>
+    <div class="sub">全89問。各選択肢に「なぜ正しい/違うか」の解説付き。章ごとに絞って解けます。</div>
+  </div>
+
+  <button class="resumebtn hide" id="resumeBtn"><span><b>▶️ 前回の続きから再開</b><span class="sub2" id="resumeSub"></span></span></button>
+
+  <button class="reviewbtn disabled" id="reviewBtn"><span><b>❌ 苦手問題だけ復習</b></span><span class="count" id="reviewCount">なし</span></button>
+
+  <div class="card" id="selectScreen">
+    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
+    <button class="domainbtn" data-ch="ALL"><span><b>全章ミックス</b></span><span class="count" id="cnt-ALL"></span></button>
+    <button class="domainbtn" data-ch="1"><span><b>第1章</b> セキュリティ・コンプライアンス・IDの概念</span><span class="count" id="cnt-1"></span></button>
+    <button class="domainbtn" data-ch="2"><span><b>第2章</b> Microsoft Entra ID</span><span class="count" id="cnt-2"></span></button>
+    <button class="domainbtn" data-ch="3"><span><b>第3章</b> M365セキュリティソリューション</span><span class="count" id="cnt-3"></span></button>
+    <button class="domainbtn" data-ch="4"><span><b>第4章</b> Azureセキュリティソリューション</span><span class="count" id="cnt-4"></span></button>
+    <button class="domainbtn" data-ch="5"><span><b>第5章</b> M365コンプライアンスソリューション</span><span class="count" id="cnt-5"></span></button>
+    <button class="domainbtn" data-ch="6"><span><b>第6章</b> Azureコンプライアンスソリューション</span><span class="count" id="cnt-6"></span></button>
+  </div>
+
+  <div class="card hide" id="quizScreen">
+    <div class="bigmark" id="bigMark"></div>
+    <div class="topbar">
+      <button class="homebtn" id="homeBtn" title="ホームに戻る">🏠</button>
+      <div class="progressrow" style="margin-bottom:0;flex:1;">
+        <div class="progressbar"><div class="progressfill" id="progressFill"></div></div>
+        <div class="qcount" id="qCount">1 / 10</div>
+      </div>
+    </div>
+    <div class="tag" id="qTag">第1章</div>
+    <div class="qtext" id="qText"></div>
+    <div id="answerWrap"></div>
+    <button class="submitbtn" id="submitBtn">回答する</button>
+    <button class="nextbtn" id="nextBtn">次の問題 →</button>
+  </div>
+
+  <div class="card hide" id="resultScreen">
+    <div style="text-align:center;">
+      <div class="eyebrow">結果</div>
+      <svg class="ring" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="#1B2338" stroke-width="10"/>
+        <circle id="ringProgress" cx="60" cy="60" r="52" fill="none" stroke="#34D399" stroke-width="10" stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+      </svg>
+      <div class="ringnum"><div class="pct" id="resultPct">0%</div><div class="lbl" id="resultFrac">0 / 0</div></div>
+    </div>
+    <div id="breakdownWrap"></div>
+    <button class="retrybtn" id="retryBtn">章を選び直す</button>
+  </div>
+</div>
+
+<div class="achieveOverlay hide" id="achieveOverlay">
+  <div class="achieveCard">
+    <div class="trophy">🏆</div>
+    <h2>全章制覇!</h2>
+    <p>全6章で最高正答率100%を達成しました。お疲れさまでした、これで本番も安心です。</p>
+    <button id="achieveClose">閉じる</button>
+  </div>
+</div>
+
+<script>
+const CH_NAMES = {1:'第1章',2:'第2章',3:'第3章',4:'第4章',5:'第5章',6:'第6章'};
+const CH_COLORS = {1:'var(--c1)',2:'var(--c2)',3:'var(--c3)',4:'var(--c4)',5:'var(--c5)',6:'var(--c6)'};
+
+const QUESTIONS = [
+{ch:'1',num:'1-1',type:'mc',q:'セキュリティにおいて、単一の防御策ではなく複数の防御層を重ねるべきだという考え方を表す用語はどれか。',choices:[
+{t:'多層防御(Defense in Depth)',c:true,n:'物理層からデータ層まで複数の防御層を重ねる考え方そのものを指す用語。'},
+{t:'共同責任管理',c:false,n:'クラウド事業者と顧客の間で責任範囲を分担する考え方で、防御層を重ねる話ではない。'},
+{t:'脅威モデリング',c:false,n:'想定される攻撃パターンを洗い出す設計手法で、防御を重ねる考え方そのものではない。'},
+{t:'ファイアウォール',c:false,n:'多層防御を構成する要素の一つであり、多層防御という考え方自体ではない。'}]},
+
+{ch:'1',num:'1-2',type:'tf',q:'暗号化とハッシュ化に関する次の3つの記述について判断せよ。',statements:[
+{t:'非対称鍵暗号(公開鍵暗号)は、暗号化と復号に異なる鍵(公開鍵と秘密鍵)のペアを使用する。',c:true,n:'公開鍵で暗号化したものは対応する秘密鍵でしか復号できないという構造が非対称鍵暗号の特徴。'},
+{t:'対称鍵暗号化(共通鍵暗号化)は、公開鍵と秘密鍵のペアを使用する。',c:false,n:'対称鍵暗号化は暗号化・復号どちらにも同一の鍵を使う。ペアを使うのは非対称鍵暗号の方。'},
+{t:'ハッシュ化されたデータは、復号すれば元のデータに戻すことができる。',c:false,n:'ハッシュ化は一方向の変換で、ハッシュ値から元のデータを復元することはできない。'}]},
+
+{ch:'1',num:'1-3',type:'mc',q:'Azureの共同責任モデルにおいて、サービス形態(IaaS/PaaS/SaaS)に関わらずマイクロソフトが単独で責任を負う項目はどれか。',choices:[
+{t:'モバイルデバイスの管理',c:false,n:'デバイス管理は顧客側の責任であり、マイクロソフトが単独で負う項目ではない。'},
+{t:'Azureに格納されたユーザーデータへのアクセス許可',c:false,n:'誰にデータへのアクセスを許可するかは顧客が管理する責任範囲。'},
+{t:'ユーザーアカウントの作成',c:false,n:'アカウントやIDの管理は常に顧客側の責任。'},
+{t:'物理ハードウェアの管理',c:true,n:'データセンターや物理サーバーの管理は、サービス形態に関わらず常にマイクロソフト単独の責任範囲。'}]},
+
+{ch:'1',num:'1-4',type:'ms',q:'ゼロトラストの基本原則を正確に説明しているステートメントを3つ選べ。',choices:[
+{t:'物理的な場所によって信頼の境界を定義する',c:false,n:'ゼロトラストは場所による暗黙の信頼をしない考え方なので誤り。'},
+{t:'IDを主要なセキュリティ境界として使用する',c:true,n:'ネットワークの場所ではなくIDを軸に信頼を判断するのが中心的な考え方。'},
+{t:'ユーザーのアクセス許可を常に明示的に確認する',c:true,n:'「明示的に検証する」はゼロトラストの3原則の一つ。'},
+{t:'ユーザーやシステムが侵害される可能性を常に想定する',c:true,n:'「侵害を想定する」もゼロトラストの3原則の一つ。'},
+{t:'ネットワークを主要なセキュリティ境界として使用する',c:false,n:'従来型の「社内ネットワークにいれば安全」という考え方をゼロトラストは否定する。'}]},
+
+{ch:'1',num:'1-5',type:'mc',q:'次のステートメントを完成させよ。「オンプレミスとクラウド両方のリソースを持つ環境では、[ ]を主要なセキュリティ境界とすべきである。」',choices:[
+{t:'クラウド',c:false,n:'クラウドという場所自体は境界として使えず、オンプレミスも含む環境全体を守れない。'},
+{t:'ファイアウォール',c:false,n:'ネットワーク境界の防御策であり、場所に依存しないID中心の考え方には合わない。'},
+{t:'ID',c:true,n:'場所を問わず一貫して適用できる境界はIDであり、ゼロトラストの考え方と一致する。'},
+{t:'Microsoft Defender for Cloud',c:false,n:'特定のセキュリティ製品の名前であり、境界の概念そのものを指す答えにはならない。'}]},
+
+{ch:'1',num:'1-6',type:'mc',q:'SaaS(Software as a Service)クラウドサービスモデルのセキュリティを評価する際、顧客が責任を持つ項目はどれか。',choices:[
+{t:'オペレーティングシステム',c:false,n:'SaaSではOSの管理は事業者側の責任で、顧客は関与しない。'},
+{t:'ネットワーク制御',c:false,n:'SaaSではネットワークインフラの制御も事業者側が管理する。'},
+{t:'アプリケーション',c:false,n:'アプリケーション自体の管理・保守は提供事業者側の責任。'},
+{t:'アカウントとID',c:true,n:'SaaSであっても、誰がどのアカウントでアクセスするかというID管理は常に顧客側の責任。'}]},
+
+{ch:'2',num:'2-1',type:'mc',q:'ユーザーがAzure portalにサインインした時、最初に行われるプロセスはどれか。',choices:[
+{t:'アクセス許可の付与',c:false,n:'アクセス許可の付与(認可)は本人確認の後に行われる。'},
+{t:'認証される',c:true,n:'サインイン時にまず行われるのは「あなたが誰であるか」を確認する認証。'},
+{t:'承認される',c:false,n:'承認(認可)は認証の後、何にアクセスできるかを決めるプロセス。'},
+{t:'解決される',c:false,n:'サインインのプロセスを表す用語としては一般的でない。'}]},
+
+{ch:'2',num:'2-2',type:'mc',q:'サインインしたユーザーが、リソースへのアクセス許可を持っているかどうかを検証するプロセスを何というか。',choices:[
+{t:'シングルサインオン',c:false,n:'一度の認証で複数サービスにアクセスできる仕組みで、許可の検証プロセスそのものではない。'},
+{t:'認証',c:false,n:'認証は本人確認のプロセスで、アクセス許可の検証はその後の別プロセス。'},
+{t:'フェデレーション',c:false,n:'組織間で信頼関係を結ぶ仕組みで、個々のアクセス許可検証とは異なる。'},
+{t:'承認(認可)',c:true,n:'本人確認の後、そのユーザーがリソースへのアクセス許可を持つか検証するのが承認。'}]},
+
+{ch:'2',num:'2-3',type:'mc',q:'フェデレーションは、組織間で何を確立するために使用されるか。',choices:[
+{t:'多要素認証(MFA)',c:false,n:'MFAは個々のサインイン時の認証強化策で、組織間の関係とは別の話。'},
+{t:'VPN接続',c:false,n:'VPNはネットワーク接続の暗号化技術で、フェデレーションとは目的が異なる。'},
+{t:'信頼関係',c:true,n:'組織間に信頼関係を結ぶことで、片方のIdPでの認証結果を他方でも受け入れられるようになる。'},
+{t:'ユーザーアカウントの同期',c:false,n:'アカウント同期はハイブリッドID構成の役割であり、フェデレーションの本質ではない。'}]},
+
+{ch:'2',num:'2-4',type:'mc',q:'サプライヤーやパートナーなど外部組織のビジネスパートナーとのコラボレーションを有効にするには何を使用するか。',choices:[
+{t:'フェデレーション信頼',c:false,n:'組織間の認証連携の仕組みであり、ゲストアカウント登録機能そのものではない。'},
+{t:'AD DS(Active Directory Domain Services)',c:false,n:'オンプレミス向けのディレクトリサービスで、外部コラボ機能ではない。'},
+{t:'Azure AD B2C',c:false,n:'一般消費者(カスタマー)向け認証基盤で、社内ビジネスパートナー向けではない。'},
+{t:'Azure AD B2B(Microsoft Entra B2B)',c:true,n:'B2Bを構成すると外部組織のユーザーをゲストとして招待し、アクセス許可を設定できる。'}]},
+
+{ch:'2',num:'2-5',type:'tf',q:'Microsoft Entra ID(Azure AD)の基本に関する次の3つの記述について判断せよ。',statements:[
+{t:'Entra IDはMicrosoft 365サブスクリプションの一部としてしか利用できず、単体では購入できない。',c:false,n:'365に含まれる機能とは別に、単体でもライセンス購入・利用ができる。'},
+{t:'Entra IDは、クラウドベースのIDおよびアクセス管理サービスである。',c:true,n:'Entra IDの基本定義そのもの。SSOやMFAなどを提供するIDaaS。'},
+{t:'Entra IDは、オンプレミス環境に直接展開(インストール)できる製品である。',c:false,n:'Entra IDはクラウド専用のサービスで、オンプレミスに展開する製品ではない。'}]},
+
+{ch:'2',num:'2-6',type:'tf',q:'Entra IDテナントの管理に関する次の3つの記述について判断せよ。',statements:[
+{t:'Entra IDテナントは、Azure portalなどで管理できる。',c:true,n:'Azure portalの管理センターからテナントの各種設定を管理できる。'},
+{t:'Azure仮想マシンは、それをホストするEntra IDテナント上に必ずデプロイしなければならない。',c:false,n:'仮想マシンはサブスクリプション上にデプロイされるもので、テナントに「ホスト」される必要はない。'},
+{t:'すべてのEntra IDのライセンスエディションは、同じ機能を含んでいる。',c:false,n:'Free・P1・P2などエディションによって使える機能が異なる。'}]},
+
+{ch:'2',num:'2-7',type:'mc',q:'オンプレミスからEntra ID(Azure AD)にIDを同期する際に使用するツールはどれか。',choices:[
+{t:'Active Directory Federation Services(AD FS)',c:false,n:'信頼関係を構築する技術で、ID同期そのものの主目的ではない。'},
+{t:'Entra Connect(Azure AD Connect)',c:true,n:'オンプレミスのADとEntra IDを同期させ、ハイブリッドID環境を構築する代表的なツール。'},
+{t:'Entra Privileged Identity Management(PIM)',c:false,n:'特権ロールの一時的な昇格を管理する機能で、ID同期ツールではない。'},
+{t:'Microsoft Sentinel',c:false,n:'SIEM/SOARのセキュリティ運用ツールで、ID同期とは無関係。'}]},
+
+{ch:'2',num:'2-8',type:'mc',q:'アプリケーションをEntra ID(Azure AD)に登録すると、どの種類のIDが作成されるか。',choices:[
+{t:'ユーザーアカウント',c:false,n:'人間のサインイン用IDで、アプリ登録で作られるものではない。'},
+{t:'ユーザー割り当てマネージドID',c:false,n:'Azureリソースが他のリソースにアクセスするための仕組みで、アプリ登録とは別機能。'},
+{t:'システム割り当てマネージドID',c:false,n:'同上。アプリの登録によって自動生成されるIDとは異なる。'},
+{t:'サービスプリンシパル',c:true,n:'アプリをEntra IDに登録すると、そのアプリの実行時IDとしてサービスプリンシパルが作成される。'}]},
+
+{ch:'2',num:'2-9',type:'ms',q:'Windows Hello for Businessで使用できる認証方法を3つ選べ。',choices:[
+{t:'声帯',c:false,n:'声紋認証はWindows Helloの標準的な生体認証方式には含まれない。'},
+{t:'顔',c:true,n:'顔認証はWindows Helloの代表的な生体認証方式の一つ。'},
+{t:'静脈',c:false,n:'静脈認証はWindows Helloの標準機能としては提供されていない。'},
+{t:'PIN',c:true,n:'PINは生体認証ではないが、パスワードレス認証方法の一つ。'},
+{t:'指紋',c:true,n:'指紋認証もWindows Helloの代表的な生体認証方式の一つ。'}]},
+
+{ch:'2',num:'2-10',type:'tf',q:'パスワードレス認証に関する次の3つの記述について判断せよ。',statements:[
+{t:'FIDO2セキュリティキーを使用すると、パスワードを使わずにサインインできる。',c:true,n:'FIDO2キーはパスワードレス認証の代表的な方式の一つ。'},
+{t:'Windows Helloは、パスワードを使わずにサインインできる。',c:true,n:'生体認証やPINでサインインするWindows Helloもパスワードレス認証の一例。'},
+{t:'ソフトウェアトークンは、パスワードレス認証の一例である。',c:false,n:'ソフトウェアトークンはMFAの追加要素として使われるもので、単体はパスワードレス認証の代表例には含まれない。'}]},
+
+{ch:'2',num:'2-11',type:'tf',q:'セルフサービスパスワードリセット(SSPR)に関する次の3つの記述について判断せよ。',statements:[
+{t:'SSPRの登録には、組織のメールアドレスでなくても外部の個人メールアドレスを使用できる。',c:true,n:'認証方法として外部のメールアドレスを登録・利用できる。'},
+{t:'Microsoft Authenticatorアプリへの通知を使用して、SSPR時の認証を行うことができる。',c:true,n:'Authenticatorアプリのプッシュ通知承認もSSPRの認証方法として利用できる。'},
+{t:'SSPRを実行するには、ユーザーが既にEntra IDにサインインし、認証されている必要がある。',c:false,n:'SSPRはパスワードを忘れてサインインできない時に使う機能なので、事前のサインインは不要。'}]},
+
+{ch:'2',num:'2-12',type:'mc',q:'Entra ID(Azure AD)のパスワード保護機能の目的は何か。',choices:[
+{t:'ユーザーがパスワード内に特定の単語(禁止パスワード)を使用するのを防ぐ',c:true,n:'禁止パスワードリストなどにより、推測されやすい単語の使用を防ぐのが目的。'},
+{t:'グローバルに認識される暗号化標準でパスワードを暗号化する',c:false,n:'暗号化アルゴリズムの話であり、パスワード保護機能の主目的ではない。'},
+{t:'多要素認証を使用せずにサインインできるデバイスを識別する',c:false,n:'MFAの除外設定に関する話であり、パスワード保護とは別の機能。'},
+{t:'ユーザーがパスワードを変更しなければならない頻度を制御する',c:false,n:'パスワードの有効期限ポリシーの話で、パスワード保護機能とは別物。'}]},
+
+{ch:'2',num:'2-13',type:'tf',q:'セキュリティの既定値群(Security Defaults)に関する次の3つの記述について判断せよ。',statements:[
+{t:'セキュリティの既定値群を有効にするには、Entra ID P1/P2などのプレミアムライセンスが必要である。',c:false,n:'無料のライセンス(Free)でも利用できる、無償の基本保護機能。'},
+{t:'セキュリティの既定値群が有効な場合、すべての管理者は常にMFAを使用する必要がある。',c:true,n:'管理者アカウントは特に狙われやすいため、既定値群では管理者に常時MFAを要求する。'},
+{t:'セキュリティの既定値群は、個々のユーザー単位で有効・無効を切り替えることができる。',c:false,n:'ユーザー単位ではなく、テナント全体に対して一括で切り替える設定。'}]},
+
+{ch:'2',num:'2-14',type:'tf',q:'Entra IDのロールに関する次の3つの記述について判断せよ。',statements:[
+{t:'グローバル管理者は、Entra IDにあらかじめ定義されている組み込みロールである。',c:true,n:'グローバル管理者はEntra IDの最上位の組み込みロールの一つ。'},
+{t:'管理者は、既存のロールをコピーするなどしてカスタムロールを作成できる。',c:true,n:'組み込みロールで足りない場合、必要な権限だけを持つカスタムロールを作成できる。'},
+{t:'1人のユーザーには、1つのロールしか割り当てることができない。',c:false,n:'実際には1人のユーザーに複数のロールを同時に割り当てることができる。'}]},
+
+{ch:'2',num:'2-15',type:'mc',q:'特定のグループに属するすべてのユーザーが、Entra IDへのサインインにMFAを使用しなければならないようにするには、何を使用すればよいか。',choices:[
+{t:'Azureポリシー',c:false,n:'Azureリソースの構成基準を評価する仕組みで、サインイン時のMFA強制には使わない。'},
+{t:'通信コンプライアンスポリシー',c:false,n:'社内コミュニケーションの監視に関する機能で、MFAの強制とは無関係。'},
+{t:'条件付きアクセスポリシー',c:true,n:'特定のグループを条件に、MFAを要求するといった制御を行える。'},
+{t:'ユーザーリスクポリシー',c:false,n:'ID Protectionのリスクベースの制御であり、グループ単位の一律なMFA強制とは目的が異なる。'}]},
+
+{ch:'2',num:'2-16',type:'tf',q:'条件付きアクセスポリシーに関する次の3つの記述について判断せよ。',statements:[
+{t:'条件付きアクセスポリシーは、クラウドアプリへのアクセスにMFAの使用を強制できる。',c:true,n:'条件を満たした場合にMFAを要求する、という制御が典型的な使い方。'},
+{t:'条件付きアクセスポリシーを使って、ユーザーをEntra IDのロールに追加できる。',c:false,n:'ロールへのユーザー割り当てはRBACの機能であり、条件付きアクセスの役割ではない。'},
+{t:'グローバル管理者は、条件付きアクセスポリシーの適用対象から常に除外される。',c:false,n:'グローバル管理者も対象にでき、除外するかは設定次第。'}]},
+
+{ch:'2',num:'2-17',type:'ms',q:'Entra ID Protection(旧Azure AD Identity Protection)を使用して実行できるタスクを3つ選べ。',choices:[
+{t:'リスク検出をサードパーティのユーティリティにエクスポートする',c:true,n:'検出したリスクデータをLog AnalyticsワークスペースやストレージなどへエクスポートしSIEM等と連携できる。'},
+{t:'IDベースのリスクの検出と修復を自動化する',c:true,n:'中心的な機能。リスクを検出し、条件付きアクセスと連携して自動対応できる。'},
+{t:'ユーザー認証に関わるリスクを調査する',c:true,n:'検出されたサインインリスク・ユーザーリスクの詳細を調査できる。'},
+{t:'パートナー組織の外部アクセスを構成する',c:false,n:'Entra B2Bなど外部コラボレーション機能の役割であり、ID Protectionの機能ではない。'},
+{t:'秘密度ラベルを作成し、データに自動的に割り当てる',c:false,n:'Microsoft Purviewの情報保護機能であり、ID Protectionとは別の製品領域。'}]},
+
+{ch:'2',num:'2-18',type:'mc',q:'IDの柱となる4つの要素(認証・承認・管理・監査)のうち、ユーザーがアクセスするリソースの追跡に関連する柱はどれか。',choices:[
+{t:'共有するもの',c:false,n:'IDの4本柱の選択肢としては該当しない。'},
+{t:'SIEMシステム',c:false,n:'SIEMは監査ログなどを分析するツールの名前で、IDの柱の答えではない。'},
+{t:'Identity Provider',c:false,n:'IDを保管・検証するサービスの名称で、IDの柱の名前ではない。'},
+{t:'監査',c:true,n:'誰が何にアクセスしたかを記録・追跡するのが「監査」の役割。'}]},
+
+{ch:'2',num:'2-19',type:'mc',q:'ユーザーがサインインすると、[ ]はその身元を証明するために認証情報を検証する。',choices:[
+{t:'承認(認可)',c:false,n:'アクセス許可の可否を決めるプロセスで、身元そのものの検証ではない。'},
+{t:'認証',c:true,n:'サインイン時にユーザーの身元を検証するのが認証の役割そのもの。'},
+{t:'監査',c:false,n:'後から行動を記録・確認するプロセスで、サインイン時の身元検証ではない。'},
+{t:'管理',c:false,n:'アカウントやロールなどの構成作業を指し、身元検証のプロセスではない。'}]},
+
+{ch:'2',num:'2-20',type:'mc',q:'複数のIDプロバイダーにまたがるシングルサインオン(SSO)機能を提供するのは何か。',choices:[
+{t:'ドメインコントローラー',c:false,n:'オンプレミスADの認証を処理するサーバーで、複数IdP間のSSOの仕組みではない。'},
+{t:'フェデレーション',c:true,n:'組織・ドメインを越えた信頼関係を結ぶことで、複数のIdPをまたいだSSOが実現する。'},
+{t:'Active Directory Domain Services(AD DS)',c:false,n:'単一組織向けのオンプレミスディレクトリサービスで、複数IdPをまたぐ仕組みではない。'},
+{t:'Entra Privileged Identity Management(PIM)',c:false,n:'特権ロールの一時的な昇格管理機能で、SSOとは無関係。'}]},
+
+{ch:'2',num:'2-21',type:'mc',q:'Entra ID(Azure AD)は何と表現できるか。',choices:[
+{t:'管理グループ',c:false,n:'Azureサブスクリプションを整理する仕組みで、IDプロバイダーの説明ではない。'},
+{t:'SIEMシステム',c:false,n:'ログ分析ツールの一種であり、Entra IDの説明としては不適切。'},
+{t:'Identity Provider(IdP)',c:true,n:'Entra IDはユーザーIDを保管し、認証・検証を行うIdPそのもの。'},
+{t:'XDRシステム',c:false,n:'脅威検出・対応の統合セキュリティ製品カテゴリで、Entra IDの説明とは異なる。'}]},
+
+{ch:'2',num:'2-22',type:'tf',q:'ハイブリッドID環境に関する次の3つの記述について判断せよ。',statements:[
+{t:'ハイブリッドモデルでは、認証はEntra ID、または他のIDプロバイダーによって行われる。',c:true,n:'構成次第でEntra ID自体が認証を行う場合と、AD FS等の他のIdPが認証を行う場合がある。'},
+{t:'Entra IDで作成されたユーザーアカウントは、自動的にオンプレミスのActive Directoryに同期される。',c:false,n:'同期は一般的にオンプレミス→Entra IDの一方向がベースで、逆方向へは自動的に戻らない。'},
+{t:'ハイブリッドID環境では、多くの場合オンプレミス側がマスターとなり、オンプレミスでIDを作成する。',c:true,n:'典型的な構成では、オンプレミスのADでIDを作成し、それをEntra IDへ同期する。'}]},
+
+{ch:'2',num:'2-23',type:'mc',q:'仮想マシンなどのAzureリソースでマネージドIDを有効にすると何が起こるか。',choices:[
+{t:'そのリソースが自動的にEntra Connectで同期される',c:false,n:'マネージドIDはEntra Connectの同期機能とは無関係。'},
+{t:'IDがEntra IDに登録され、そのIDを利用して他のAzureリソースにアクセスできるようになる',c:true,n:'資格情報を管理することなく、安全に他のAzureリソースへアクセスできる。'},
+{t:'そのリソースにオンプレミスの管理者権限が付与される',c:false,n:'Azureリソース間のアクセスの仕組みであり、オンプレミス権限とは無関係。'},
+{t:'そのリソースが条件付きアクセスの対象外になる',c:false,n:'マネージドIDの有効化と条件付きアクセスの適用対象は別の話。'}]},
+
+{ch:'2',num:'2-24',type:'mc',q:'多要素認証(MFA)において、パスワードはどの要素に分類されるか。',choices:[
+{t:'共有するもの',c:false,n:'MFAの3要素の分類としては存在しない表現。'},
+{t:'知っているもの(知識情報)',c:true,n:'パスワードは頭の中で覚えている情報なので「知っているもの」に分類される。'},
+{t:'本人が持っているもの(所持情報)',c:false,n:'スマートフォンやセキュリティキーなど、物理的に所持するものがこの分類。'},
+{t:'本人自身のもの(生体情報)',c:false,n:'指紋や顔などの生体情報がこの分類。パスワードは該当しない。'}]},
+
+{ch:'2',num:'2-25',type:'mc',q:'Entra ID(Azure AD)のセキュリティの既定値群を有効にした場合、すべてのユーザーに対して何が有効になるか。',choices:[
+{t:'多要素認証(MFA)',c:true,n:'既定値群を有効にすると、テナント内の全ユーザーに対してMFAが有効になる。'},
+{t:'Entra ID Identity Protection',c:false,n:'別途有効化・ライセンスが必要な機能で、既定値群と自動的にセットではない。'},
+{t:'Entra Privileged Identity Management',c:false,n:'別のプレミアム機能であり、既定値群の有効化だけで使えるようになるものではない。'},
+{t:'Entra ID Premium P2の全機能',c:false,n:'既定値群自体は無償機能であり、P2の全機能が有効になるわけではない。'}]},
+
+{ch:'2',num:'2-26',type:'mc',q:'Microsoft Intuneで、管理されているデバイスから企業リソースへのアクセスを制限するために使用できるEntra IDの機能はどれか。',choices:[
+{t:'リソースロック',c:false,n:'Azureリソースの誤削除・誤変更を防ぐ機能で、デバイス条件によるアクセス制御とは別。'},
+{t:'条件付きアクセスポリシー',c:true,n:'デバイスの管理状態やコンプライアンス状態を条件として、アクセスを許可・ブロックできる。'},
+{t:'Entra Privileged Identity Management',c:false,n:'特権ロールの一時昇格管理であり、デバイス条件によるアクセス制限機能ではない。'},
+{t:'ネットワークセキュリティグループ(NSG)',c:false,n:'Azureのネットワークトラフィックを制御する機能で、Intuneのデバイス条件とは無関係。'}]},
+
+{ch:'2',num:'2-27',type:'mc',q:'Entraグループのメンバーがサインイン時にMFAを使用できるようにするには、何を使用する必要があるか。',choices:[
+{t:'条件付きアクセスポリシー',c:true,n:'特定のグループを対象にMFAを要求する条件を設定できる。'},
+{t:'Entra ID Protection',c:false,n:'リスクベースの検出・対応が主目的で、単純なグループ単位のMFA強制は条件付きアクセスの役割。'},
+{t:'Entra Privileged Identity Management',c:false,n:'特権ロールの時限的な有効化を扱う機能で、一般グループへのMFA強制とは異なる。'},
+{t:'Azureロールベースのアクセス制御(Azure RBAC)',c:false,n:'Azureリソースへの権限割り当ての仕組みで、サインイン時のMFA要求とは別の機能。'}]},
+
+{ch:'2',num:'2-28',type:'tf',q:'条件付きアクセスポリシーに関する次の3つの記述について判断せよ。',statements:[
+{t:'条件付きアクセスポリシーは、グローバル管理者などの特定のロールに対して適用できる。',c:true,n:'ロールを条件としてポリシーを適用することができる。'},
+{t:'条件付きアクセスポリシーは、条件としてデバイスプラットフォームを使用できる。',c:true,n:'AndroidやiOSなど、デバイスのプラットフォームを条件に含めることができる。'},
+{t:'あらかじめ信頼できる場所を定義しておくことで、その場所にいるユーザーだけにクラウドアプリへのアクセスを許可できる。',c:true,n:'「名前付きの場所」を信頼できる場所として登録し、それを条件として利用できる。'}]},
+
+{ch:'2',num:'2-29',type:'mc',q:'[ ]を利用すると、条件付きアクセスを利用してリアルタイムのセッション制御を行うことができる。',choices:[
+{t:'Microsoft Defender for Cloud',c:false,n:'Azureリソースのセキュリティ態勢管理が主目的で、リアルタイムのセッション制御機能ではない。'},
+{t:'Microsoft Defender for Cloud Apps',c:true,n:'条件付きアクセスと連携し、アクセス後のダウンロードや印刷、コピペなどをリアルタイムに制御できる。'},
+{t:'Microsoft Sentinel',c:false,n:'SIEM/SOARであり、セッション単位のリアルタイム制御機能ではない。'},
+{t:'Entra Privileged Identity Management',c:false,n:'特権ロールの時限的な昇格管理機能で、セッション制御とは目的が異なる。'}]},
+
+{ch:'2',num:'2-30',type:'mc',q:'Azureの管理タスクを行うために、2時間などの時間枠で一時的に管理権限を提供できる機能はどれか。',choices:[
+{t:'多要素認証(MFA)',c:false,n:'認証強化の仕組みであり、権限を時限的に付与する機能ではない。'},
+{t:'Entra ID Identity Protection',c:false,n:'リスク検出が主目的で、時限的な権限付与の機能ではない。'},
+{t:'条件付きアクセス',c:false,n:'アクセス可否の制御であり、権限を時間限定で有効化する機能ではない。'},
+{t:'Entra Privileged Identity Management(PIM)',c:true,n:'Just-In-Timeアクセスにより、必要な時だけ時間制限付きで特権ロールを有効化できる。'}]},
+
+{ch:'2',num:'2-31',type:'mc',q:'[ ]は、アプリケーションシークレットを保管するためのクラウドサービスである。',choices:[
+{t:'Entra ID Password Protection',c:false,n:'弱いパスワードの使用防止機能であり、シークレット保管サービスではない。'},
+{t:'Azure Bastion',c:false,n:'仮想マシンへの安全な接続を提供するサービスで、シークレット保管とは無関係。'},
+{t:'Azure Information Protection(AIP)',c:false,n:'文書などの情報保護(現Purview傘下)のサービスであり、アプリのシークレット保管とは別物。'},
+{t:'Azure Key Vault',c:true,n:'シークレット・暗号化キー・証明書を安全に一元管理するためのサービス。'}]},
+
+{ch:'3',num:'3-1',type:'mc',q:'デバイスのMicrosoftセキュアスコアを表示するには、何を使用するか。',choices:[
+{t:'Microsoft Defender for Cloud Apps',c:false,n:'SaaSアプリの可視化・制御が主目的で、デバイスのセキュアスコアとは別の指標。'},
+{t:'Microsoft Defender for Endpoint',c:true,n:'デバイスのセキュアスコアはDefender for Endpointの機能として提供される。'},
+{t:'Microsoft Defender for Identity',c:false,n:'オンプレミスのアイデンティティ脅威検出が目的で、デバイスのスコア表示機能ではない。'},
+{t:'Microsoft Defender for Office 365',c:false,n:'メール・コラボツールの保護が目的で、デバイスのスコアとは異なる。'}]},
+
+{ch:'3',num:'3-2',type:'mc',q:'電子メールの添付ファイルをスキャンし、マルウェアが検出されなかった場合のみ受信トレイに配信するサービスはどれか。',choices:[
+{t:'Microsoft Defender for Endpoint',c:false,n:'デバイスを対象とするサービスで、メール添付ファイルのスキャンは対象外。'},
+{t:'Microsoft Defender for Identity',c:false,n:'オンプレミスのアイデンティティ脅威を検出するサービスで、メール保護は対象外。'},
+{t:'Microsoft Defenderウイルス対策',c:false,n:'デバイス上のウイルス対策機能で、メールの受信フローとは別。'},
+{t:'Microsoft Defender for Office 365',c:true,n:'メールや添付ファイルをスキャンし、安全と判断されたものだけを受信トレイに配信する。'}]},
+
+{ch:'3',num:'3-3',type:'mc',q:'Microsoft 365 Defenderポータルにおいて、インシデントとは何か。',choices:[
+{t:'相関するアラートの集合体',c:true,n:'複数の関連するアラートをまとめて一つのインシデントとして扱い、全体像を把握しやすくする。'},
+{t:'イベント',c:false,n:'個々の出来事(ログ)を指す言葉で、インシデントの定義そのものではない。'},
+{t:'脆弱性',c:false,n:'システム上の弱点を指す言葉で、アラートの集合体という定義には当たらない。'},
+{t:'Microsoftセキュアスコア改善アクション',c:false,n:'セキュアスコアを上げるための推奨事項であり、インシデントの定義ではない。'}]},
+
+{ch:'3',num:'3-4',type:'tf',q:'Microsoft Defender for Endpointに関する次の3つの記述について判断せよ。',statements:[
+{t:'Defender for Endpointを使用すると、Android端末を保護対象としてオンボードできる。',c:true,n:'Windowsだけでなく、Android等のモバイルOSもオンボードして保護対象にできる。'},
+{t:'Defender for Endpointは、Windows 10を実行するAzure仮想マシンを保護対象にできる。',c:true,n:'オンプレミス・クラウド問わず、Windows端末をオンボードして保護できる。'},
+{t:'Defender for Endpointは、SharePoint Onlineのサイトやコンテンツをウイルスから保護できる。',c:false,n:'デバイス保護が対象で、SharePointのコンテンツ保護は対象外。'}]},
+
+{ch:'3',num:'3-5',type:'tf',q:'Microsoftセキュアスコアに関する次の3つの記述について判断せよ。',statements:[
+{t:'Microsoftセキュアスコアが高いということは、Microsoft 365で定義されたリスクが低いということである。',c:true,n:'必要なセキュリティ対策がより多くできているほど、リスクは相対的に低いと考えられる。'},
+{t:'Microsoftセキュアスコアは、多要素認証(MFA)を適用するとスコアが上がる。',c:true,n:'MFAの適用など推奨されるセキュリティ対策を実施するとスコアが向上する。'},
+{t:'Microsoftセキュアスコアは、データのセキュリティやガバナンス、コンプライアンス規制や標準を含むアクションの完了と進捗を測定する。',c:false,n:'これはコンプライアンスマネージャー(コンプライアンススコア)の説明であり、セキュアスコアとは異なる。'}]},
+
+{ch:'3',num:'3-6',type:'mc',q:'オンプレミスのActive Directoryの信号を活用して高度な脅威を識別・検出・調査するクラウドベースのソリューションはどれか。',choices:[
+{t:'Microsoft Defender for Cloud Apps',c:false,n:'SaaSアプリの可視化・制御が主目的で、オンプレミスADの信号活用が中心ではない。'},
+{t:'Microsoft Defender for Endpoint',c:false,n:'デバイス保護が主目的で、オンプレミスADの信号解析が中心ではない。'},
+{t:'Microsoft Defender for Identity',c:true,n:'オンプレミスのActive Directoryのシグナルを分析し、アイデンティティに関する脅威を検出することに特化している。'},
+{t:'Microsoft Defender for Office 365',c:false,n:'メールやコラボツールの保護が目的で、オンプレミスADの信号解析とは異なる。'}]},
+
+{ch:'3',num:'3-7',type:'ms',q:'Microsoft 365 Defenderポータルの[ホーム]画面で利用できるカードを2つ選べ。',choices:[
+{t:'危険性のあるユーザー',c:true,n:'リスクがあると判定されたユーザーの状況を確認できるカードが用意されている。'},
+{t:'コンプライアンススコア',c:false,n:'コンプライアンスマネージャー側の指標で、365 Defenderホーム画面のカードとしては用意されていない。'},
+{t:'サービスの健全性',c:false,n:'サービスの稼働状況はMicrosoft 365管理センター側で確認する情報。'},
+{t:'ユーザー管理',c:false,n:'管理センター側の機能であり、365 Defenderホームのカードとしては用意されていない。'},
+{t:'危険性のあるデバイス',c:true,n:'リスクがあると判定されたデバイスの状況を確認できるカードが用意されている。'}]},
+
+{ch:'3',num:'3-8',type:'mc',q:'セキュリティ傾向を表示し、IDの保護状態を追跡するには、Microsoft 365 Defenderポータルで何を使用する必要があるか。',choices:[
+{t:'レポート',c:true,n:'[レポート]ページのセキュリティレポートで、ID・データ・デバイス・アプリなどの保護状態の傾向を確認できる。'},
+{t:'インシデント',c:false,n:'個別の脅威対応の記録であり、全体的な傾向・保護状態の追跡機能ではない。'},
+{t:'ハンティング',c:false,n:'能動的な脅威調査を行う機能であり、傾向表示とは目的が異なる。'},
+{t:'セキュアスコア',c:false,n:'構成状況の点数化であり、傾向の時系列表示に特化した機能ではない。'}]},
+
+{ch:'4',num:'4-1',type:'mc',q:'Azure SQL Managed Instanceの脅威検出を提供するために何を使用できるか。',choices:[
+{t:'アプリケーションセキュリティグループ',c:false,n:'NSGルールをアプリ単位でグループ化する機能で、脅威検出機能ではない。'},
+{t:'Azure Bastion',c:false,n:'仮想マシンへの安全な接続を提供するサービスで、SQLの脅威検出とは無関係。'},
+{t:'Microsoft Defender for Cloud',c:true,n:'CWP(クラウドワークロード保護)機能により、Azure SQL Managed Instance等の脅威を検出できる。'},
+{t:'Microsoftセキュアスコア',c:false,n:'構成状況を点数化する指標で、個別リソースの脅威検出機能ではない。'}]},
+
+{ch:'4',num:'4-2',type:'mc',q:'Microsoft Sentinelでは、一般的なタスクについて[ ]で自動化することができる。',choices:[
+{t:'ハンティングクエリ',c:false,n:'能動的な脅威調査に使うクエリであり、タスクの自動化そのものの仕組みではない。'},
+{t:'プレイブック',c:true,n:'Azure Logic Appsを使い、一般的な対応タスクを自動化する仕組み。'},
+{t:'詳細なログの分析',c:false,n:'自動化の仕組みの名称ではなく、行う作業を指す言葉。'},
+{t:'ブック(Workbook)',c:false,n:'データを可視化するダッシュボード機能であり、タスクの自動化機能ではない。'}]},
+
+{ch:'4',num:'4-3',type:'tf',q:'Azure Bastionに関する次の3つの記述について判断せよ。',statements:[
+{t:'Azure Bastion経由で仮想マシンに接続するには、Azure portalを使用する。',c:true,n:'BastionはAzure portalのブラウザ経由で仮想マシンに接続できるサービス。'},
+{t:'Azure Bastionは、接続したい仮想マシンがある仮想ネットワークごとに作成する。',c:true,n:'VNet単位でデプロイし、そのVNet内の仮想マシンへの接続を仲介する。'},
+{t:'Azure Bastionは、RDP/SSH接続をセキュアに行うことができる。',c:true,n:'公開IPを仮想マシンに割り当てずに、安全にRDP/SSH接続を提供するのが目的。'}]},
+
+{ch:'4',num:'4-4',type:'mc',q:'Microsoft Sentinelは、Microsoft 365 Defenderと統合することで何ができるか。',choices:[
+{t:'Microsoft 365 Defenderのアラートを Sentinelに送信し、分析や自動対処を行う',c:true,n:'365 Defenderで検出されたアラートをSentinelに取り込み、他のログと合わせて相関分析や自動対応ができる。'},
+{t:'Sentinelがオンプレミスのファイアウォールを自動的に設置する',c:false,n:'そのような機能はなく、Sentinelはログの収集・分析・対応を行うSIEM/SOARである。'},
+{t:'365 Defenderのライセンス費用を削減する',c:false,n:'統合はセキュリティ運用上の連携が目的で、ライセンス費用に関する機能ではない。'},
+{t:'365 Defenderのユーザーアカウントを自動作成する',c:false,n:'アカウント作成はEntra IDの管理機能であり、Sentinelとの統合の目的ではない。'}]},
+
+{ch:'4',num:'4-5',type:'mc',q:'Azure DDoS Protection Standardが追加コストなしで保護できるリソースの最大数はいくつか。',choices:[
+{t:'100',c:true,n:'パブリックIPアドレスのリソース数が100までは月額固定料金の範囲内で保護され、超えるとリソースごとに追加課金される。'},
+{t:'50',c:false,n:'実際の無償枠は100リソースまでで、50ではない。'},
+{t:'1000',c:false,n:'1000は実際の無償枠より大きい数値で誤り。'},
+{t:'500',c:false,n:'500は実際の無償枠より大きい数値で誤り。'}]},
+
+{ch:'4',num:'4-6',type:'ms',q:'ネットワークセキュリティグループ(NSG)を関連付けられるAzureのリソースを2つ選べ。',choices:[
+{t:'Azure App ServiceのWebアプリ',c:false,n:'App ServiceのWebアプリに直接NSGを関連付けることはできない。'},
+{t:'仮想ネットワーク',c:false,n:'NSGはVNet全体ではなく、サブネットやNICの単位で関連付ける。'},
+{t:'仮想ネットワークサブネット',c:true,n:'NSGはサブネット単位で関連付けてトラフィックをフィルタリングできる。'},
+{t:'ネットワークインターフェイス',c:true,n:'個々のネットワークインターフェイス(NIC)単位でも関連付けられる。'},
+{t:'リソースグループ',c:false,n:'リソースを整理する単位であり、NSGを直接関連付ける対象ではない。'}]},
+
+{ch:'4',num:'4-7',type:'mc',q:'Microsoft Sentinelと別のセキュリティソースとの間で、リアルタイムの統合を提供するために何を使用するか。',choices:[
+{t:'Entra ID Connect',c:false,n:'ID同期のためのツールであり、Sentinelとのログ統合には使われない。'},
+{t:'Log Analyticsワークスペース',c:false,n:'ログの保存先であり、他のセキュリティソースとの接続そのものを担う機能ではない。'},
+{t:'Azure Information Protection',c:false,n:'情報保護(ラベル付け等)の機能であり、データソースとの統合機能ではない。'},
+{t:'コネクタ',c:true,n:'Sentinelは各種データソースと接続するために「データコネクタ」を使用する。'}]},
+
+{ch:'4',num:'4-8',type:'mc',q:'[ ]システムとは、複数のシステムからデータを収集し、相関関係や異常を特定し、アラートやインシデントを生成するツールのことである。',choices:[
+{t:'SIEM(Security Information and Event Management)',c:true,n:'複数のログを収集・相関分析して脅威を検知するのがSIEMの役割。'},
+{t:'SOAR(Security Orchestration Automated Response)',c:false,n:'検知後の対応を自動化・オーケストレーションする仕組みで、この設問の説明とは異なる役割。'},
+{t:'TAXII(Trusted Automated eXchange of Indicator Information)',c:false,n:'脅威インテリジェンス情報を交換するためのプロトコルで、この設問の説明には当たらない。'},
+{t:'ASR(An attack surface reduction)',c:false,n:'攻撃対象領域を減らすための機能群であり、この設問の説明には当たらない。'}]},
+
+{ch:'4',num:'4-9',type:'mc',q:'Azure Firewallの説明として正しいものはどれか。',choices:[
+{t:'仮想ネットワーク上の特定のネットワークインターフェイスに適用できるパーソナルファイアウォールである',c:false,n:'これはNSGに近い説明であり、Azure Firewallの説明ではない。'},
+{t:'セキュアでシームレスなリモートデスクトップ接続を提供する',c:false,n:'これはAzure Bastionの説明であり、Azure Firewallの説明ではない。'},
+{t:'仮想ネットワークのリソースを保護するクラウドネイティブなファイアウォールサービスで、ネットワーク・アプリケーションレベルのフィルタリングやNAT機能を持つ',c:true,n:'マネージド型のファイアウォールで、VNet全体のトラフィックを一元的に検査・制御できる。'},
+{t:'ネットワークアドレス変換(NAT)サービスのみを提供する',c:false,n:'NAT機能はAzure Firewallの一部機能に過ぎず、これだけが説明として正しいわけではない。'}]},
+
+{ch:'4',num:'4-10',type:'mc',q:'[ ]は、クラウドネイティブなSIEMおよびSOARソリューションであり、アラート検出、脅威の可視性、プロアクティブなハンティング、脅威への対応のための単一のソリューションを提供する。',choices:[
+{t:'Azure Advisor',c:false,n:'コスト・パフォーマンス等の推奨事項を提示するツールで、SIEM/SOARではない。'},
+{t:'Azure Bastion',c:false,n:'安全なリモート接続を提供するサービスで、SIEM/SOARとは異なる。'},
+{t:'Azure Monitor',c:false,n:'全般的な監視・ログ収集基盤であり、SIEM/SOAR専用ソリューションという説明には当たらない。'},
+{t:'Microsoft Sentinel',c:true,n:'クラウドネイティブなSIEM/SOARとして、脅威検出からハンティング・対応までを一つのソリューションで提供する。'}]},
+
+{ch:'4',num:'4-11',type:'mc',q:'Azure Bastionによって安全にアクセスできるAzureのリソースはどれか。',choices:[
+{t:'Azure Active Directoryのアプリケーション',c:false,n:'BastionはEntra IDのアプリ登録などとは無関係の、リモート接続用サービス。'},
+{t:'Azure Active Directoryのユーザー',c:false,n:'ユーザーアカウントへの接続ではなく、仮想マシンへの接続を提供するサービス。'},
+{t:'Azure仮想マシン',c:true,n:'ブラウザからAzure仮想マシンへ安全にRDP/SSH接続するためのサービス。'},
+{t:'サービスプリンシパル',c:false,n:'アプリのID表現であり、Bastionで接続する対象ではない。'}]},
+
+{ch:'4',num:'4-12',type:'mc',q:'Azure DDoS Protection Standardで保護できるものは何か。',choices:[
+{t:'リソースグループ',c:false,n:'リソースを整理する単位であり、DDoS Protectionの直接の保護対象ではない。'},
+{t:'Azure Active Directoryのアプリケーション',c:false,n:'DDoS Protectionはアプリ単位ではなく、ネットワークリソースを対象とする保護機能。'},
+{t:'仮想ネットワークのリソース',c:true,n:'仮想ネットワーク内のパブリックIPを持つリソースを保護する。'},
+{t:'Azure Active Directoryのユーザー',c:false,n:'ユーザーアカウントの保護はEntra ID側の機能領域であり、DDoS Protectionの対象ではない。'}]},
+
+{ch:'4',num:'4-13',type:'mc',q:'次のステートメントを完成させよ。「Microsoft Defender for Cloudの[ ]機能は、マルウェアやその他の不要なアプリケーションをブロックし、Azure仮想マシンのネットワーク攻撃面を減らす。」',choices:[
+{t:'脆弱性評価',c:false,n:'既知の脆弱性をスキャンして検出する機能で、アプリのブロックとは異なる。'},
+{t:'コンテナーセキュリティ',c:false,n:'コンテナ環境向けの保護機能で、この設問の説明とは異なる。'},
+{t:'クラウドセキュリティ態勢管理(CSPM)',c:false,n:'構成の推奨事項やセキュアスコアの提示が中心で、アプリのブロック機能とは異なる。'},
+{t:'適応型アプリケーション制御',c:true,n:'許可されたアプリのホワイトリストを作成し、それ以外のアプリの実行をブロックすることでネットワーク攻撃面を減らす。'}]},
+
+{ch:'5',num:'5-1',type:'mc',q:'情報保護を行うことができるツールはどれか。',choices:[
+{t:'Microsoft 365 Defender',c:false,n:'脅威検出・対応が中心で、情報保護(ラベル付け等)の主要ツールではない。'},
+{t:'Microsoft Purviewコンプライアンスポータル',c:true,n:'秘密度ラベルなど情報保護の機能はPurviewコンプライアンスポータルから実装する。'},
+{t:'Microsoft Endpoint Manager admin center',c:false,n:'デバイス管理(Intune等)の管理センターであり、情報保護の主要ツールではない。'},
+{t:'Entra ID管理センター',c:false,n:'ID・アクセス管理の管理センターであり、情報保護機能を提供する場所ではない。'}]},
+
+{ch:'5',num:'5-2',type:'mc',q:'データ損失防止(DLP)ポリシーを作成する必要がある。何を使うべきか。',choices:[
+{t:'Microsoft Purviewコンプライアンスポータル',c:true,n:'[データ損失防止]メニューからDLPポリシーを作成・管理する。'},
+{t:'Microsoft Endpoint Manager admin center',c:false,n:'デバイス管理の管理センターであり、DLPポリシーの作成場所ではない。'},
+{t:'Microsoft 365管理センター',c:false,n:'ユーザーやライセンスなどの全体管理が中心で、DLPポリシー作成の主要な場所ではない。'},
+{t:'Microsoft 365 Defenderポータル',c:false,n:'脅威検出・対応が中心のポータルであり、DLPポリシー作成の主要な場所ではない。'}]},
+
+{ch:'5',num:'5-3',type:'mc',q:'Microsoft 365の秘密度ラベルの特徴は何か。',choices:[
+{t:'暗号化されている',c:false,n:'ラベル自体が暗号化されているのではなく、暗号化はラベルに設定できる「保護設定」の一つ。'},
+{t:'事前定義されたカテゴリに制限される',c:false,n:'組織が独自に名前や保護設定を定義できるため、固定カテゴリに制限されるわけではない。'},
+{t:'持続性がある',c:true,n:'ラベルに含まれる暗号化(アクセス許可)の情報は、ファイルが転送・コピーされてもデータと一緒に移動する。'}]},
+
+{ch:'5',num:'5-4',type:'mc',q:'マイクロソフトのプライバシー原則を表すステートメントはどれか。',choices:[
+{t:'マイクロソフトは、顧客のプライバシー設定を管理する',c:false,n:'プライバシー設定を管理するのは顧客自身であり、マイクロソフトが管理するわけではない。'},
+{t:'マイクロソフトは、顧客に適用される現地のプライバシー法を尊重する',c:true,n:'各国・地域のプライバシー法を尊重し、顧客の承諾なしにデータを開示しない、というのが原則。'},
+{t:'マイクロソフトは、ホストされた顧客の電子メールやチャットデータをターゲット広告に使用する',c:false,n:'マイクロソフトは顧客データを広告目的で利用しないことを原則としている。'},
+{t:'マイクロソフトは、顧客データを一切収集しない',c:false,n:'サービス提供に必要な範囲でデータを扱うため、「一切収集しない」というのは正確ではない。'}]},
+
+{ch:'5',num:'5-5',type:'mc',q:'マイクロソフトのセキュリティ、コンプライアンス、プライバシーなどの情報を得るために利用できるサイトはどれか。',choices:[
+{t:'Microsoft Purviewコンプライアンスポータル',c:false,n:'自社テナントのコンプライアンス管理を行う管理ツールであり、マイクロソフト自身の取り組み情報の公開サイトではない。'},
+{t:'コンプライアンスマネージャー',c:false,n:'組織自身のコンプライアンス対応状況を評価する機能であり、公開サイトではない。'},
+{t:'サービストラストポータル',c:true,n:'マイクロソフトのセキュリティ対策・コンプライアンス対応・プライバシーへの取り組みなどの情報を確認できる公開ポータル。'},
+{t:'Microsoftサポート',c:false,n:'サポート窓口であり、コンプライアンス関連情報を体系的に確認する専用サイトではない。'}]},
+
+{ch:'5',num:'5-6',type:'tf',q:'Microsoft Purview監査(Premium)に関する次の3つの記述について判断せよ。',statements:[
+{t:'Microsoft 365の高度な監査を使用すると、電子メールアイテムがいつアクセスされたかを識別できる。',c:true,n:'高度な監査(Premium)のMailItemsAccessedアクティビティにより、メールアイテムへのアクセス日時を確認できる。'},
+{t:'Microsoft 365の高度な監査は、コア(標準)監査と同じ監査ログの保持期間をサポートする。',c:false,n:'標準監査は保持期間が90日までなのに対し、高度な監査(Premium)は最大1年まで保持できるなど、保持期間が異なる。'},
+{t:'Microsoft 365の高度な監査では、監査ログにアクセスする際、組織ごとに一定の帯域幅(要求数)のベースラインが割り当てられる。',c:true,n:'すべての組織に1分あたり2,000件のベースラインが割り当てられ、E5組織はそれ以外の組織の約2倍の帯域幅を利用できる。'}]},
+
+{ch:'5',num:'5-7',type:'mc',q:'ユーザーがデータを削除しても、SharePointサイト内のすべてのファイルのコピーを1年間は保存されるようにする必要がある。何を構成すべきか。',choices:[
+{t:'アイテム保持ポリシー',c:true,n:'保持ポリシーを設定することで、ユーザーが削除しても指定期間分のコピーを保持できる。'},
+{t:'秘密度ラベル',c:false,n:'主に暗号化やアクセス制御を目的としたもので、保持期間の管理が主目的ではない。'},
+{t:'データ損失防止(DLP)',c:false,n:'機密情報の漏洩防止が目的で、ファイルの保持そのものを目的とした機能ではない。'},
+{t:'インサイダーリスクポリシー',c:false,n:'内部関係者によるリスクの検知が目的で、保持設定とは異なる。'}]},
+
+{ch:'5',num:'5-8',type:'mc',q:'マイクロソフトのクラウドサービスが国際標準化機構(ISO)などの規制基準にどのように準拠しているかについての情報を提供するマイクロソフトポータルはどれか。',choices:[
+{t:'Microsoft Endpoint Manager admin center',c:false,n:'デバイス管理の管理センターであり、規制準拠状況を公開するポータルではない。'},
+{t:'Azureコスト管理+請求',c:false,n:'コスト管理のためのツールであり、規制準拠情報とは無関係。'},
+{t:'Microsoft 365管理センター',c:false,n:'組織全体の管理ハブであり、マイクロソフト自身の規制準拠状況を確認する専用ポータルではない。'},
+{t:'サービストラストポータル',c:true,n:'ISO等の規制・標準にマイクロソフトのクラウドサービスがどう準拠しているかの情報を確認できる。'}]},
+
+{ch:'5',num:'5-9',type:'mc',q:'Microsoft 365で、情報バリアポリシーを実装する場合のユースケースは何か。',choices:[
+{t:'Microsoft 365への非正規のアクセスを制限する',c:false,n:'ID・アクセス管理側の一般的な保護の話で、情報バリア特有のユースケースではない。'},
+{t:'組織内の特定のグループ間で、Microsoft Teamsでのチャットを制限する',c:true,n:'利益相反などの理由で特定グループ同士のコミュニケーションを制限するのが代表的なユースケース。'},
+{t:'組織内の特定のグループ間で、Exchange Onlineでの電子メールの送受信を制限する',c:false,n:'情報バリアはExchange Onlineでは利用できず、主にTeamsやSharePoint Onlineが対象。'},
+{t:'外部の電子メール受信者に対するデータ共有を制限する',c:false,n:'DLPなど外部共有制御の話であり、情報バリアの典型的なユースケースではない。'}]},
+
+{ch:'5',num:'5-10',type:'tf',q:'秘密度ラベルに関する次の3つの記述について判断せよ。',statements:[
+{t:'秘密度ラベルはドキュメントを暗号化するために使用できる。',c:true,n:'ラベルに暗号化の設定を含めることで、対象ドキュメントを暗号化できる。'},
+{t:'秘密度ラベルはドキュメントにヘッダーとフッターを追加できる。',c:true,n:'あらかじめ定義したヘッダー・フッター情報をラベル適用時に挿入できる。'},
+{t:'秘密度ラベルは電子メールに透かしを入れることができる。',c:false,n:'透かしの挿入はドキュメントに対する機能であり、電子メール本文に透かしを入れることはできない。'}]},
+
+{ch:'5',num:'5-11',type:'mc',q:'特定の状態に基づいて自動的にコンテンツを暗号化できるMicrosoft 365のコンプライアンス機能は何か。',choices:[
+{t:'電子情報開示(eDiscovery)',c:false,n:'訴訟等のためにデータを識別・収集する機能で、自動暗号化の機能ではない。'},
+{t:'保持ポリシー',c:false,n:'データの保持期間を管理する機能で、暗号化を自動適用する機能ではない。'},
+{t:'秘密度ラベル',c:true,n:'パスポート番号の入力など特定の条件を検知して自動的にラベルを適用し、暗号化することができる。'},
+{t:'コンテンツ検索',c:false,n:'データを検索する機能で、暗号化の自動適用機能ではない。'}]},
+
+{ch:'5',num:'5-12',type:'mc',q:'[ ]は情報保護、情報ガバナンス、データ損失防止(DLP)ポリシーを管理するための一元的な場所を提供する。',choices:[
+{t:'Microsoft Defender for Cloud',c:false,n:'Azureリソースのセキュリティ態勢管理が目的で、情報保護・DLPの管理場所ではない。'},
+{t:'Microsoft 365 Defender',c:false,n:'脅威検出・対応が中心のポータルであり、情報保護・ガバナンス管理の一元的な場所ではない。'},
+{t:'Microsoft Purviewコンプライアンスポータル',c:true,n:'情報保護、情報ガバナンス、DLPなどコンプライアンス関連機能を一元的に管理できる。'},
+{t:'Microsoft Endpoint Manager',c:false,n:'デバイス管理のためのツールであり、情報保護・DLPの一元管理場所ではない。'}]},
+
+{ch:'5',num:'5-13',type:'tf',q:'情報バリア(Information Barriers)に関する次の3つの記述について判断せよ。',statements:[
+{t:'Exchange Onlineでは、情報バリアを利用できる。',c:false,n:'情報バリアはExchange Online上のメール送受信の制限には利用できない。'},
+{t:'SharePoint Onlineでは、情報バリアを利用できる。',c:true,n:'情報バリアを使ってSharePoint Onlineのサイトへのアクセスを制限できる。'},
+{t:'Microsoft Teamsでは、情報バリアを利用できる。',c:true,n:'情報バリアを使ってTeams上でのチャットやファイル共有を制限できる。'}]},
+
+{ch:'5',num:'5-14',type:'mc',q:'[ ]は、特定の規制または要求事項のグループ化されたコントロールへの準拠を追跡する。',choices:[
+{t:'評価(アセスメント)',c:true,n:'コンプライアンスマネージャーの「アセスメント」は、特定の規制・標準にひもづくコントロール群への準拠状況を追跡する。'},
+{t:'承認アクション',c:false,n:'個々の対応タスクを指す言葉で、規制単位の追跡機能そのものではない。'},
+{t:'ソリューション',c:false,n:'製品カテゴリを指す一般的な言葉で、規制準拠の追跡機能の名称ではない。'},
+{t:'テンプレート',c:false,n:'アセスメントを作成する際の雛形であり、追跡そのものを行う機能ではない。'}]},
+
+{ch:'5',num:'5-15',type:'tf',q:'インサイダーリスク管理に関する次の3つの記述について判断せよ。',statements:[
+{t:'インサイダーリスク管理ソリューションを利用して、外部からのフィッシング詐欺を検知できる。',c:false,n:'組織「内部」の人物によるリスクが対象で、外部からのフィッシング詐欺の検知は対象外。'},
+{t:'Microsoft Purviewコンプライアンスポータルからインサイダーリスク管理ソリューションにアクセスできる。',c:true,n:'インサイダーリスク管理はPurviewコンプライアンスポータルの機能の一つとして提供される。'},
+{t:'インサイダーリスク管理ソリューションは、不満のある従業員によるデータ漏洩を検出するために使用できる。',c:true,n:'退職予定者や不満を持つ従業員による意図的なデータ持ち出しなどの兆候を検出するのが主な用途の一つ。'}]},
+
+{ch:'5',num:'5-16-1',type:'mc',q:'コンプライアンスマネージャーの分類において、「静止データの暗号化」はどのアクションに分類されるか。',choices:[
+{t:'修正',c:false,n:'修正は問題が起きた後に構成を是正する対応。暗号化はそれ以前の予防策。'},
+{t:'検出',c:false,n:'検出は問題の発生を見つけ出す対応。暗号化はそれ以前の予防策に当たる。'},
+{t:'予防',c:true,n:'データが漏洩する前にあらかじめ暗号化しておくのは、被害の発生を未然に防ぐ「予防」に当たる。'}]},
+
+{ch:'5',num:'5-16-2',type:'mc',q:'コンプライアンスマネージャーの分類において、「システムアクセス監査の実施」はどのアクションに分類されるか。',choices:[
+{t:'修正',c:false,n:'修正は問題発生後の是正対応であり、監査の実施自体はそれとは異なる。'},
+{t:'検出',c:true,n:'監査ログを確認して不審なアクセスなどの兆候を見つけ出す活動は「検出」に当たる。'},
+{t:'予防',c:false,n:'予防は事前の防止策を指し、監査の実施はむしろ事後・状況把握の側面が強い。'}]},
+
+{ch:'5',num:'5-16-3',type:'mc',q:'コンプライアンスマネージャーの分類において、「セキュリティインシデントに対応するための構成変更」はどのアクションに分類されるか。',choices:[
+{t:'修正',c:true,n:'発生したインシデントを受けて構成を是正する対応は「修正」に当たる。'},
+{t:'検出',c:false,n:'検出は問題を見つけ出す活動であり、構成変更を行う対応そのものではない。'},
+{t:'予防',c:false,n:'予防は事前の対策であり、インシデント発生後の構成変更は該当しない。'}]},
+
+{ch:'5',num:'5-17',type:'mc',q:'次のステートメントを完成させよ。「コンプライアンスマネージャーでは、コンプライアンスデータを[ ]評価する。」',choices:[
+{t:'1か月ごとに',c:false,n:'固定の月次サイクルではなく、より頻繁・継続的に評価が行われる。'},
+{t:'四半期ごとに',c:false,n:'四半期という固定サイクルではなく、継続的に評価が行われる。'},
+{t:'継続して',c:true,n:'システム設定を自動的にスキャンし、継続的にデータを評価・更新する。'},
+{t:'オンデマンドでのみ',c:false,n:'手動実行だけでなく、自動的・継続的な評価が行われる点が特徴。'}]},
+
+{ch:'5',num:'5-18',type:'mc',q:'[ ]は、データ保護と規制基準に関するリスクの軽減に役立つアクションを完了した企業の進捗を測定する。',choices:[
+{t:'コンプライアンススコア',c:true,n:'推奨アクションの実施状況をもとに企業の準拠状況の進捗を数値化する。'},
+{t:'Microsoft Purviewコンプライアンスポータルレポート',c:false,n:'各種レポートは個別の状況を示すものであり、進捗全体を測る指標そのものはコンプライアンススコア。'},
+{t:'トラストセンター',c:false,n:'マイクロソフトの取り組みを紹介する情報サイトであり、自社の進捗測定機能ではない。'},
+{t:'トラストドキュメント',c:false,n:'特定の指標や機能の名称ではない。'}]},
+
+{ch:'5',num:'5-19',type:'mc',q:'顧客のリストと関連付けられたクレジットカード番号を含む電子メールメッセージの送信をユーザーに制限するために使用できるMicrosoft 365の機能はどれか。',choices:[
+{t:'アイテム保持ポリシー',c:false,n:'データの保持期間を管理する機能で、送信の制限そのものが目的ではない。'},
+{t:'データ損失防止(DLP)',c:true,n:'クレジットカード番号のような機密情報を検知し、外部への送信をブロック・制限するのがDLPの役割。'},
+{t:'情報バリア',c:false,n:'組織内グループ間の通信制限が目的で、機密情報の内容に基づく制御ではない。'},
+{t:'条件付きアクセスポリシー',c:false,n:'サインイン時のアクセス制御が目的で、メール内容に基づく送信制限は対象外。'}]},
+
+{ch:'5',num:'5-20',type:'tf',q:'Microsoft Purviewに関する次の3つの記述について判断せよ。',statements:[
+{t:'Microsoft Purviewは、機密データの分類機能(秘密度ラベルなど)を提供する。',c:true,n:'データを機密度に応じて分類・保護する情報保護機能を提供する。'},
+{t:'Microsoft Sentinelは、データライフサイクル管理ソリューションである。',c:false,n:'クラウドベースのSIEM/SOARであり、データライフサイクル管理を主目的とした製品ではない。'},
+{t:'Microsoft Purviewは、Azureに保存されているデータのみを検出できる。',c:false,n:'Azureに限らず、Microsoft 365など幅広い環境のデータを対象に保護・検出を行える。'}]},
+
+{ch:'5',num:'5-21',type:'mc',q:'Microsoft 365の秘密度ラベルでできることは何か。',choices:[
+{t:'保存期間を指定する',c:false,n:'保存期間の指定は保持ラベル・保持ポリシーの役割であり、秘密度ラベルの主目的ではない。'},
+{t:'保存場所を指定する',c:false,n:'データの保存場所自体を制御する機能ではない。'},
+{t:'透かしを挿入する',c:true,n:'秘密度ラベルを利用すると、ドキュメントに透かしを挿入することができる。'},
+{t:'アーカイブのタイミングを指定する',c:false,n:'アーカイブのタイミング指定は保持ポリシー側の話であり、秘密度ラベルの機能ではない。'}]},
+
+{ch:'5',num:'5-22',type:'mc',q:'[ ]を使用すると、インサイダーリスク管理を構成できる。',choices:[
+{t:'Microsoft 365管理センター',c:false,n:'全体的なユーザー・ライセンス管理が中心で、インサイダーリスク管理の構成場所ではない。'},
+{t:'Microsoft Purviewコンプライアンスポータル',c:true,n:'インサイダーリスク管理はPurviewコンプライアンスポータルから設定・確認を行う。'},
+{t:'Microsoft 365 Defender',c:false,n:'脅威検出・対応が中心のポータルであり、インサイダーリスク管理の主要な構成場所ではない。'},
+{t:'Microsoft Defender for Cloud',c:false,n:'Azureリソースのセキュリティ態勢管理が目的で、インサイダーリスク管理とは別の製品領域。'}]},
+
+{ch:'5',num:'5-23',type:'mc',q:'[ ]を使用すると、組織内のグループ間の通信を制御することができる。',choices:[
+{t:'カスタマーロックボックス',c:false,n:'マイクロソフトのサポート担当者がデータにアクセスする際の承認機能であり、グループ間通信の制御とは無関係。'},
+{t:'Entra Privileged Identity Management',c:false,n:'特権ロールの時限的な昇格管理機能であり、グループ間通信の制御とは異なる。'},
+{t:'情報バリア',c:true,n:'組織内の特定グループ間の通信(チャットやファイル共有など)を制限するための機能。'},
+{t:'条件付きアクセス',c:false,n:'サインイン時のアクセス制御が目的で、グループ間の通信制御とは異なる。'}]},
+
+{ch:'5',num:'5-24',type:'mc',q:'Microsoft Purviewコンプライアンスポータルの情報保護ソリューションを使用して何を保護できるか。',choices:[
+{t:'ゼロデイ攻撃からコンピューターを保護する',c:false,n:'エンドポイント保護(Defender for Endpoint等)の役割であり、情報保護ソリューションの主目的ではない。'},
+{t:'フィッシング先からユーザーを守る',c:false,n:'メールセキュリティ(Defender for Office 365等)の役割であり、情報保護ソリューションの主目的ではない。'},
+{t:'マルウェアやウイルスからファイルを保護する',c:false,n:'ウイルス対策・エンドポイント保護の役割であり、情報保護ソリューションの主目的ではない。'},
+{t:'機密データが許可されていないユーザーに公開されないようにする',c:true,n:'秘密度ラベルなどにより、機密データへのアクセスや共有範囲を制御するのが目的。'}]},
+
+{ch:'5',num:'5-25',type:'tf',q:'情報バリア(Information Barriers)に関する次の3つの記述について判断せよ。',statements:[
+{t:'Exchange Onlineでは、情報バリアを使用してユーザー間の通信を制限できる。',c:false,n:'情報バリアはExchange Onlineのメール送受信そのものの制限には利用できない。'},
+{t:'情報バリアを使用して、SharePoint Onlineサイトへのアクセスを制限できる。',c:true,n:'情報バリアポリシーでSharePoint Onlineのサイトアクセスを制限できる。'},
+{t:'情報バリアを使用して、Microsoft Teamsで他のユーザーとファイルを共有できないようにできる。',c:true,n:'情報バリアポリシーでTeams上でのチャットやファイル共有を制限できる。'}]},
+
+{ch:'6',num:'6-1',type:'mc',q:'複数のリソースを含むAzureサブスクリプションがある。コンプライアンスを評価し、既存のリソースの標準を適用する必要がある。何を使うべきか。',choices:[
+{t:'Azure Blueprints',c:false,n:'新規リソースを標準構成でまとめてデプロイする仕組みで、既存リソースの評価・準拠強制はAzure Policyの役割。'},
+{t:'Microsoft Sentinel',c:false,n:'SIEM/SOARであり、リソースの構成標準への準拠評価が主目的ではない。'},
+{t:'Azure Policy',c:true,n:'既存リソースを含めてコンプライアンス(標準への準拠)を評価し、適用することができる。'},
+{t:'Anomaly Detectorサービス',c:false,n:'データの異常検知を行うAIサービスであり、リソースのコンプライアンス評価とは無関係。'}]},
+
+{ch:'6',num:'6-2',type:'tf',q:'Azure Policyに関する次の3つの記述について判断せよ。',statements:[
+{t:'Azure Policyは、自動修復をサポートする。',c:true,n:'非準拠のリソースを自動的に修復する機能をサポートしている。'},
+{t:'Azure PolicyでのCompliance評価は、対象リソースが作成された時、または変更された時にのみ行われる。',c:false,n:'作成・変更時に加え、ポリシーの新規割り当て時や、24時間ごとの標準的な評価サイクルでも評価が行われる。'},
+{t:'Azure Policyを使用すると、新しいリソースが企業標準に準拠しているかどうかを評価できる。',c:true,n:'ポリシーを構成することで、作成されたAzureリソースが標準に準拠しているかを評価・確認できる。'}]},
+
+{ch:'6',num:'6-3',type:'ms',q:'Azure Blueprintsで定義できる要素として正しいものをすべて選べ。',choices:[
+{t:'RBAC(ロールの割り当て)',c:true,n:'Blueprints定義にはロールベースのアクセス制御(RBAC)の割り当てを含めることができる。'},
+{t:'管理グループ',c:false,n:'サブスクリプションを整理する上位の概念であり、Blueprints定義の構成要素ではない。'},
+{t:'Azure Policy',c:true,n:'Blueprints定義にはAzure Policyの割り当てを含めることができる。'},
+{t:'ARMテンプレート',c:true,n:'Blueprints定義にはARM(Azure Resource Manager)テンプレートを含めることができる。'},
+{t:'PowerShellスクリプト',c:false,n:'PowerShellスクリプトの実行はBlueprintsの定義要素には含まれない。'},
+{t:'リソースグループ',c:true,n:'Blueprints定義にはリソースグループの作成を含めることができる。'},
+{t:'Azure Firewall',c:false,n:'個別のネットワークサービスであり、Blueprintsの定義要素の種類そのものではない。'}]},
+
+{ch:'6',num:'6-4',type:'mc',q:'Azureサブスクリプションで新しいリソースを作成するとき、再現性を確保する必要がある。何を使うべきか。',choices:[
+{t:'Azureバッチ',c:false,n:'大規模並列・バッチ計算ワークロード向けのサービスで、リソース構成の再現性とは無関係。'},
+{t:'Azure Blueprints',c:true,n:'同じ構成のAzureリソースを再現性を確保した形で展開できる。'},
+{t:'Microsoft Sentinel',c:false,n:'SIEM/SOARであり、リソース作成の再現性確保とは無関係。'},
+{t:'Azure Policy',c:false,n:'構成基準への準拠を評価・強制する仕組みであり、リソースの再現的な展開そのものを行う機能ではない。'}]},
+
+{ch:'6',num:'6-5',type:'tf',q:'リソースロックに関する次の3つの記述について判断せよ。',statements:[
+{t:'Azureサブスクリプションに、リソースロックを設定できる。',c:true,n:'リソースロックはサブスクリプション、リソースグループ、個々のリソースのいずれにも設定できる。'},
+{t:'リソースロックは、1つのリソースに対して1つだけ作成できる。',c:false,n:'実際には1つのスコープあたり最大20個までリソースロックを作成できる。'},
+{t:'リソースロックが適用されたリソースが含まれるリソースグループは、削除できなくなる。',c:true,n:'リソースにロックをかけると、それを含むリソースグループごと削除できなくなる。'}]},
+
+{ch:'6',num:'6-6',type:'mc',q:'複数のサブスクリプション間で、一貫した方法でAzureリソースをプロビジョニングするために何を使用できるか。',choices:[
+{t:'Microsoft Defender for Cloud',c:false,n:'Azureリソースのセキュリティ評価・保護が目的で、リソースのプロビジョニング自体を行う機能ではない。'},
+{t:'Azure Policy',c:false,n:'構成基準への準拠を評価・強制する仕組みで、プロビジョニングそのものを一貫して行う機能とは異なる。'},
+{t:'Microsoft Sentinel',c:false,n:'SIEM/SOARであり、リソースのプロビジョニングとは無関係。'},
+{t:'Azure Blueprints',c:true,n:'Blueprints定義を複数のサブスクリプションに適用することで、同じ構成のリソースを一貫した方法で展開できる。'}]}
+];
+
+let pool = [];
+let idx = 0;
+let score = 0;
+let chStats = {};
+let curAnswer = null;
+let curTfAnswers = [];
+let bestScores = {};
+let missedSet = new Set();
+let celebrated = false;
+let sessionLabel = '';
+let savedSession = null;
+
+async function saveBestScores(){
+  try{ await window.storage.set('sc900-best-scores', JSON.stringify(bestScores), false); }catch(e){}
+}
+async function saveMissed(){
+  try{ await window.storage.set('sc900-missed', JSON.stringify(Array.from(missedSet)), false); }catch(e){}
+}
+async function saveSession(){
+  const s = {label: sessionLabel, nums: pool.map(q=>q.num), idx, score, chStats};
+  try{ await window.storage.set('sc900-session', JSON.stringify(s), false); }catch(e){}
+}
+async function clearSession(){
+  savedSession = null;
+  try{ await window.storage.delete('sc900-session', false); }catch(e){}
+  updateResumeButton();
+}
+function updateResumeButton(){
+  const btn = document.getElementById('resumeBtn');
+  const sub = document.getElementById('resumeSub');
+  if(savedSession && savedSession.idx < savedSession.nums.length){
+    btn.classList.remove('hide');
+    sub.textContent = savedSession.label+' ・ '+(savedSession.idx+1)+' / '+savedSession.nums.length+'問目から';
+  } else {
+    btn.classList.add('hide');
+  }
+}
+async function loadProgress(){
+  try{
+    const r = await window.storage.get('sc900-best-scores', false);
+    if(r && r.value) bestScores = JSON.parse(r.value);
+  }catch(e){}
+  try{
+    const r2 = await window.storage.get('sc900-missed', false);
+    if(r2 && r2.value) missedSet = new Set(JSON.parse(r2.value));
+  }catch(e){}
+  try{
+    const r3 = await window.storage.get('sc900-session', false);
+    if(r3 && r3.value) savedSession = JSON.parse(r3.value);
+  }catch(e){}
+  refreshChapterButtons();
+}
+
+function recordResult(q, correct){
+  if(correct) missedSet.delete(q.num);
+  else missedSet.add(q.num);
+  saveMissed();
+}
+
+function showBigMark(correct){
+  const el = document.getElementById('bigMark');
+  el.textContent = correct ? '⭕' : '❌';
+  el.style.color = correct ? 'var(--ok)' : 'var(--bad)';
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+function updateReviewButton(){
+  const btn = document.getElementById('reviewBtn');
+  const cnt = document.getElementById('reviewCount');
+  if(missedSet.size === 0){
+    btn.classList.add('disabled');
+    cnt.textContent = 'なし';
+  } else {
+    btn.classList.remove('disabled');
+    cnt.textContent = missedSet.size+'問';
+  }
+}
+
+function checkAchievement(){
+  if(celebrated) return;
+  const allHundred = ['1','2','3','4','5','6'].every(k=>bestScores[k]>=100);
+  if(allHundred){
+    celebrated = true;
+    document.getElementById('achieveOverlay').classList.remove('hide');
+  }
+}
+
+function refreshChapterButtons(){
+  const c = {1:0,2:0,3:0,4:0,5:0,6:0};
+  QUESTIONS.forEach(q=>c[q.ch]++);
+  document.getElementById('cnt-ALL').textContent = QUESTIONS.length+'問';
+  ['1','2','3','4','5','6'].forEach(k=>{
+    const btn = document.querySelector('.domainbtn[data-ch="'+k+'"]');
+    btn.classList.remove('score-gray','score-green','score-yellow','score-red');
+    const best = bestScores[k];
+    let cls = 'score-gray', pctHtml = '';
+    if(best !== undefined){
+      cls = best>=100 ? 'score-green' : (best>=80 ? 'score-yellow' : 'score-red');
+      pctHtml = '<span class="pct">'+best+'%</span>';
+    }
+    btn.classList.add(cls);
+    document.getElementById('cnt-'+k).innerHTML = c[k]+'問'+pctHtml;
+  });
+  updateReviewButton();
+  updateResumeButton();
+}
+refreshChapterButtons();
+loadProgress();
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+document.querySelectorAll('.domainbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const ch = btn.dataset.ch;
+    pool = shuffle(ch==='ALL' ? QUESTIONS : QUESTIONS.filter(q=>q.ch===ch));
+    idx = 0; score = 0; chStats = {};
+    ['1','2','3','4','5','6'].forEach(k=>chStats[k]={correct:0,total:0});
+    sessionLabel = ch==='ALL' ? '全章ミックス' : CH_NAMES[ch];
+    saveSession();
+    document.getElementById('selectScreen').classList.add('hide');
+    document.getElementById('resultScreen').classList.add('hide');
+    document.getElementById('quizScreen').classList.remove('hide');
+    renderQuestion();
+  });
+});
+
+document.getElementById('reviewBtn').addEventListener('click', ()=>{
+  if(missedSet.size === 0) return;
+  pool = shuffle(QUESTIONS.filter(q=>missedSet.has(q.num)));
+  idx = 0; score = 0; chStats = {};
+  ['1','2','3','4','5','6'].forEach(k=>chStats[k]={correct:0,total:0});
+  sessionLabel = '苦手問題の復習';
+  saveSession();
+  document.getElementById('selectScreen').classList.add('hide');
+  document.getElementById('resultScreen').classList.add('hide');
+  document.getElementById('quizScreen').classList.remove('hide');
+  renderQuestion();
+});
+
+document.getElementById('resumeBtn').addEventListener('click', ()=>{
+  if(!savedSession) return;
+  const restored = savedSession.nums.map(n=>QUESTIONS.find(q=>q.num===n)).filter(Boolean);
+  if(restored.length !== savedSession.nums.length){ clearSession(); return; }
+  pool = restored;
+  idx = savedSession.idx;
+  score = savedSession.score;
+  chStats = savedSession.chStats;
+  sessionLabel = savedSession.label;
+  document.getElementById('selectScreen').classList.add('hide');
+  document.getElementById('resultScreen').classList.add('hide');
+  document.getElementById('quizScreen').classList.remove('hide');
+  renderQuestion();
+});
+
+document.getElementById('homeBtn').addEventListener('click', ()=>{
+  document.getElementById('quizScreen').classList.add('hide');
+  document.getElementById('selectScreen').classList.remove('hide');
+  refreshChapterButtons();
+});
+
+document.getElementById('achieveClose').addEventListener('click', ()=>{
+  document.getElementById('achieveOverlay').classList.add('hide');
+});
+
+function renderQuestion(){
+  curAnswer = null; curTfAnswers = [];
+  const q = pool[idx];
+  document.getElementById('qCount').textContent = (idx+1)+' / '+pool.length;
+  document.getElementById('progressFill').style.width = ((idx)/pool.length*100)+'%';
+  const tag = document.getElementById('qTag');
+  tag.textContent = CH_NAMES[q.ch]+' 問'+q.num;
+  tag.style.background = 'color-mix(in srgb, '+CH_COLORS[q.ch]+' 18%, transparent)';
+  tag.style.color = CH_COLORS[q.ch];
+  tag.style.border = '1px solid '+CH_COLORS[q.ch];
+  document.getElementById('qText').textContent = q.q;
+  const wrap = document.getElementById('answerWrap');
+  wrap.innerHTML = '';
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  if(q.type === 'mc'){
+    q.choices.forEach((choice, i)=>{
+      const b = document.createElement('button');
+      b.className = 'choice';
+      b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
+      b.addEventListener('click', ()=>selectMc(i));
+      wrap.appendChild(b);
+    });
+  } else if(q.type === 'ms'){
+    q.choices.forEach((choice, i)=>{
+      const b = document.createElement('button');
+      b.className = 'choice';
+      b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
+      b.addEventListener('click', ()=>toggleMs(i, b));
+      wrap.appendChild(b);
+    });
+    const sub = document.getElementById('submitBtn');
+    sub.style.display = 'block';
+    sub.onclick = submitMs;
+  } else if(q.type === 'tf'){
+    q.statements.forEach((st, i)=>{
+      curTfAnswers.push(null);
+      const row = document.createElement('div');
+      row.className = 'tfrow';
+      row.innerHTML = '<div class="tftext">'+st.t+'</div><div class="tfbtns"><button class="tfbtn" data-v="1">はい</button><button class="tfbtn" data-v="0">いいえ</button></div><div class="tfnote">'+st.n+'</div>';
+      const btns = row.querySelectorAll('.tfbtn');
+      btns.forEach(b=>{
+        b.addEventListener('click', ()=>selectTf(i, b.dataset.v==='1', row, btns));
+      });
+      wrap.appendChild(row);
+    });
+  }
+}
+
+function selectMc(i){
+  const q = pool[idx];
+  const buttons = document.querySelectorAll('#answerWrap .choice');
+  buttons.forEach((b, bi)=>{
+    b.classList.add('disabled','revealed');
+    if(q.choices[bi].c) b.classList.add('correct');
+    else if(bi===i) b.classList.add('wrong');
+  });
+  const correct = q.choices[i].c;
+  chStats[q.ch].total++;
+  if(correct){ score++; chStats[q.ch].correct++; }
+  showBigMark(correct);
+  recordResult(q, correct);
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function toggleMs(i, btn){
+  if(!curAnswer) curAnswer = new Set();
+  if(curAnswer.has(i)){ curAnswer.delete(i); btn.classList.remove('checked'); }
+  else { curAnswer.add(i); btn.classList.add('checked'); }
+}
+
+function submitMs(){
+  const q = pool[idx];
+  const buttons = document.querySelectorAll('#answerWrap .choice');
+  const selected = curAnswer || new Set();
+  let allCorrect = true;
+  buttons.forEach((b, bi)=>{
+    b.classList.add('disabled','revealed');
+    const isC = q.choices[bi].c;
+    const isSel = selected.has(bi);
+    if(isC && isSel) b.classList.add('correct');
+    else if(isC && !isSel){ b.classList.add('correct'); allCorrect = false; }
+    else if(!isC && isSel){ b.classList.add('wrong'); allCorrect = false; }
+  });
+  chStats[q.ch].total++;
+  if(allCorrect){ score++; chStats[q.ch].correct++; }
+  showBigMark(allCorrect);
+  recordResult(q, allCorrect);
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function selectTf(i, val, row, btns){
+  if(curTfAnswers[i] !== null) return;
+  curTfAnswers[i] = val;
+  const q = pool[idx];
+  const correct = q.statements[i].c;
+  row.classList.add('revealed');
+  btns.forEach(b=>{
+    const bv = b.dataset.v === '1';
+    if(bv === correct) b.classList.add('correct');
+    else if(bv === val) b.classList.add('wrong');
+  });
+  row.classList.add(val===correct ? 'correct' : 'wrong');
+
+  if(curTfAnswers.every(a=>a!==null)){
+    const q2 = pool[idx];
+    let allCorrect = curTfAnswers.every((a,ii)=>a===q2.statements[ii].c);
+    chStats[q2.ch].total++;
+    if(allCorrect){ score++; chStats[q2.ch].correct++; }
+    showBigMark(allCorrect);
+    recordResult(q2, allCorrect);
+    document.getElementById('nextBtn').style.display = 'block';
+  }
+}
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  idx++;
+  if(idx >= pool.length) showResults();
+  else { saveSession(); renderQuestion(); }
+});
+
+function showResults(){
+  document.getElementById('quizScreen').classList.add('hide');
+  document.getElementById('resultScreen').classList.remove('hide');
+  const pct = Math.round(score/pool.length*100);
+  document.getElementById('resultPct').textContent = pct+'%';
+  document.getElementById('resultFrac').textContent = score+' / '+pool.length+' 問正解';
+  const circumference = 326.7;
+  const offset = circumference - (circumference * pct/100);
+  const ring = document.getElementById('ringProgress');
+  ring.style.stroke = pct>=70 ? '#34D399' : (pct>=50 ? '#FBBF24' : '#F87171');
+  setTimeout(()=>{ ring.style.transition='stroke-dashoffset 0.8s ease'; ring.style.strokeDashoffset = offset; }, 50);
+
+  const bwrap = document.getElementById('breakdownWrap');
+  bwrap.innerHTML = '';
+  ['1','2','3','4','5','6'].forEach(k=>{
+    const s = chStats[k];
+    if(!s || s.total===0) return;
+    const p = Math.round(s.correct/s.total*100);
+    const row = document.createElement('div');
+    row.className = 'brow';
+    row.innerHTML = '<div class="browtop"><span>'+CH_NAMES[k]+'</span><span class="nm">'+s.correct+'/'+s.total+' &middot; '+p+'%</span></div><div class="brack"><div class="brfill" style="width:'+p+'%;background:'+CH_COLORS[k]+'"></div></div>';
+    bwrap.appendChild(row);
+  });
+
+  let changed = false;
+  ['1','2','3','4','5','6'].forEach(k=>{
+    const s = chStats[k];
+    if(!s || s.total===0) return;
+    const p = Math.round(s.correct/s.total*100);
+    if(bestScores[k]===undefined || p > bestScores[k]){ bestScores[k] = p; changed = true; }
+  });
+  if(changed) saveBestScores();
+  clearSession();
+  refreshChapterButtons();
+  checkAchievement();
+}
+
+document.getElementById('retryBtn').addEventListener('click', ()=>{
+  document.getElementById('resultScreen').classList.add('hide');
+  document.getElementById('selectScreen').classList.remove('hide');
+});
+</script>
+</body>
+</html>
