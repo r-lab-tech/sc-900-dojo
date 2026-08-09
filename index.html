@@ -734,6 +734,17 @@ let celebrated = false;
 let sessionLabel = '';
 let savedSession = null;
 
+async function loadRecentScores(){
+  if(!window.getRecentScores) return;
+
+  try{
+    const scores = await window.getRecentScores();
+    console.log('最新3回の正答率:', scores);
+  }catch(e){
+    console.error('正答率の取得に失敗:', e);
+  }
+}
+
 async function saveBestScores(){
   try{ await window.storage.set('sc900-best-scores', JSON.stringify(bestScores), false); }catch(e){}
 }
@@ -1213,6 +1224,43 @@ function escapeHtmlHistory(value){
 
   console.log("回答を保存しました:", docRef.id);
 };
+window.getRecentScores = async function(){
+  const snapshot = await getDocs(collection(db, "answers"));
+
+  const grouped = {};
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const id = data.questionId;
+
+    if(!grouped[id]){
+      grouped[id] = [];
+    }
+
+    grouped[id].push(data);
+  });
+
+  const scores = {};
+
+  Object.keys(grouped).forEach(id => {
+    const recent = grouped[id]
+      .sort((a, b) =>
+        b.createdAt.toMillis() - a.createdAt.toMillis()
+      )
+      .slice(0, 3);
+
+    const correctCount = recent.filter(a => a.correct === true).length;
+
+    scores[id] = {
+      correct: correctCount,
+      total: recent.length,
+      rate: Math.round(correctCount / recent.length * 100)
+    };
+  });
+
+  return scores;
+};
+loadRecentScores();
 loadMissedFromFirebase();
 </script>
 </body>
