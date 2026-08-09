@@ -1026,7 +1026,7 @@ function showResults(){
     if(bestScores[k]===undefined || p > bestScores[k]){ bestScores[k] = p; changed = true; }
   });
   if(changed) saveBestScores();
-  saveStudySession();
+  window.saveStudySession(sessionLabel, pool.length, score);
   clearSession();
   refreshChapterButtons();
   checkAchievement();
@@ -1058,13 +1058,13 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  window.saveStudySession = async function(){
+  window.saveStudySession = async function(label, total, correct){
   try{
     await addDoc(collection(db, "studySessions"), {
-      mode: sessionLabel,
-      total: pool.length,
-      correct: score,
-      score: Math.round(score / pool.length * 100),
+      mode: label,
+      total: total,
+      correct: correct,
+      score: Math.round(correct / total * 100),
       createdAt: new Date()
     });
 
