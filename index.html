@@ -8,13 +8,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0B1220; --surface:#141B2E; --surface2:#1B2338; --line:#2A3550;
-    --text:#E5E9F5; --muted:#8892B0; --ok:#34D399; --ok-dim:#0F3D30;
-    --bad:#F87171; --bad-dim:#4A1E22;
-    --c1:#A78BFA; --c2:#38BDF8; --c3:#34D399; --c4:#FBBF24; --c5:#FB7185; --c6:#60A5FA;
-  }
+  --bg:#F4F6F8;
+  --surface:#FFFFFF;
+  --surface2:#F8FAFC;
+  --line:#D8DEE8;
+  --text:#172033;
+  --muted:#5B6475;
+
+  --ok:#16A36A;
+  --ok-dim:#E8F7F0;
+  --bad:#D94B5B;
+  --bad-dim:#FCEBED;
+
+  --c1:#7C5CDB;
+  --c2:#3182CE;
+  --c3:#16A36A;
+  --c4:#D99A18;
+  --c5:#D95C72;
+  --c6:#4D79C7;
+}
   *{box-sizing:border-box;}
-  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%, #17203A 0%, var(--bg) 55%);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
   .hdr{margin-bottom:18px;}
   .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
