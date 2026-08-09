@@ -1052,10 +1052,13 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const docRef = await addDoc(collection(db, "test"), {
-  message: "SC-900道場テスト",
+  const docRef = await addDoc(collection(db, "answers"), {
+  questionId: 1,
+  correct: true,
   createdAt: new Date()
 });
+
+console.log("保存しました:", docRef.id);
 
 console.log("保存しました:", docRef.id);
 </script>
