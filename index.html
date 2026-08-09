@@ -982,6 +982,15 @@ document.getElementById('startModeBtn').addEventListener('click', ()=>{
 
   pool = pool.slice(0, questionCount);
 
+  if(pool.length === 0){
+  alert(
+    questionMode === 'weak'
+      ? '苦手に該当する問題がありません。'
+      : '大苦手に該当する問題がありません。'
+  );
+  return;
+}
+
   idx = 0;
   score = 0;
   chStats = {};
