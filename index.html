@@ -115,6 +115,11 @@
 #homeTitle {
   cursor: pointer;
 }
+#qRate {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 8px 0 10px;
+}
 </style>
 </head>
 <body>
@@ -158,6 +163,7 @@
       </div>
     </div>
     <div class="tag" id="qTag">第1章</div>
+    <div id="qRate"></div>
     <div class="qtext" id="qText"></div>
     <div id="answerWrap"></div>
     <button class="submitbtn" id="submitBtn">回答する</button>
@@ -729,6 +735,7 @@ let chStats = {};
 let curAnswer = null;
 let curTfAnswers = [];
 let bestScores = {};
+
 let missedSet = new Set();
 let celebrated = false;
 let sessionLabel = '';
@@ -739,6 +746,7 @@ async function loadRecentScores(){
 
   try{
     const scores = await window.getRecentScores();
+    recentScores = scores;
     console.log('最新3回の正答率:', scores);
   }catch(e){
     console.error('正答率の取得に失敗:', e);
@@ -914,6 +922,14 @@ function renderQuestion(){
   document.getElementById('progressFill').style.width = ((idx)/pool.length*100)+'%';
   const tag = document.getElementById('qTag');
   tag.textContent = CH_NAMES[q.ch]+' 問'+q.num;
+  const rateEl = document.getElementById('qRate');
+  const recent = recentScores[q.num];
+
+if(recent){
+  rateEl.textContent = '正答率：'+recent.rate+'%（最新'+recent.total+'回）';
+} else {
+  rateEl.textContent = '正答率：まだありません';
+}
   tag.style.background = 'color-mix(in srgb, '+CH_COLORS[q.ch]+' 18%, transparent)';
   tag.style.color = CH_COLORS[q.ch];
   tag.style.border = '1px solid '+CH_COLORS[q.ch];
