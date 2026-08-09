@@ -754,6 +754,10 @@ function recordResult(q, correct){
   if(correct) missedSet.delete(q.num);
   else missedSet.add(q.num);
   saveMissed();
+
+  if(window.saveAnswer){
+    window.saveAnswer(q.num, correct);
+  }
 }
 
 function showBigMark(correct){
@@ -1052,15 +1056,16 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  
+  window.saveAnswer = async function(questionId, correct){
   const docRef = await addDoc(collection(db, "answers"), {
-  questionId: 1,
-  correct: true,
-  createdAt: new Date()
-});
+    questionId: questionId,
+    correct: correct,
+    createdAt: new Date()
+  });
 
-console.log("保存しました:", docRef.id);
-
-console.log("保存しました:", docRef.id);
+  console.log("回答を保存しました:", docRef.id);
+};
 </script>
 </body>
 </html>
