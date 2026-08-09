@@ -169,6 +169,7 @@
   この条件で開始
 </button>
 
+<div id="chapterSelect">
   <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
     <button class="domainbtn" data-ch="ALL"><span><b>全章ミックス</b></span><span class="count" id="cnt-ALL"></span></button>
     <button class="domainbtn" data-ch="1"><span><b>第1章</b> セキュリティ・コンプライアンス・IDの概念</span><span class="count" id="cnt-1"></span></button>
@@ -178,6 +179,7 @@
     <button class="domainbtn" data-ch="5"><span><b>第5章</b> M365コンプライアンスソリューション</span><span class="count" id="cnt-5"></span></button>
     <button class="domainbtn" data-ch="6"><span><b>第6章</b> Azureコンプライアンスソリューション</span><span class="count" id="cnt-6"></span></button>
   </div>
+</div>
 
   <div class="card hide" id="quizScreen">
     <div class="bigmark" id="bigMark"></div>
@@ -917,6 +919,14 @@ document.querySelectorAll('.modebtn').forEach(btn=>{
 
     btn.classList.add('active');
     questionMode = btn.dataset.mode;
+
+    const chapterSelect = document.getElementById('chapterSelect');
+
+if(questionMode === 'normal'){
+  chapterSelect.style.display = '';
+}else{
+  chapterSelect.style.display = 'none';
+}
   });
 });
 
