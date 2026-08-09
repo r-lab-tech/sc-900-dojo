@@ -1348,26 +1348,86 @@ document.getElementById('homeTitle').addEventListener('click', () => {
     }
 
     wrap.innerHTML = '';
-    sortedDays.forEach(([key, sessions])=>{
-      sessions.sort((a,b)=>b.date-a.date);
-      const total = sessions.reduce((sum,s)=>sum+s.total,0);
-      const correct = sessions.reduce((sum,s)=>sum+s.correct,0);
-      const pct = total ? Math.round(correct/total*100) : 0;
 
-      const day = document.createElement('div');
-      day.className = 'historyDay';
-      const [y,m,d] = key.split('-');
-      day.innerHTML = '<div class="historyDayHead"><span class="historyDate">'+y+'年'+Number(m)+'月'+Number(d)+'日</span><span class="historyTotal">'+correct+'/'+total+'問 ・ '+pct+'%</span></div>';
+const recentDays = sortedDays.slice(0, 7);
+const olderDays = sortedDays.slice(7);
 
-      sessions.forEach(s=>{
-        const row = document.createElement('div');
-        row.className = 'historySession';
-        const time = s.date.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
-        row.innerHTML = '<span class="historyMode">'+time+' ・ '+escapeHtmlHistory(s.mode)+'</span><span class="historyScore">'+s.correct+'/'+s.total+' ・ '+s.score+'%</span>';
-        day.appendChild(row);
-      });
-      wrap.appendChild(day);
+// 最新7日分
+recentDays.forEach(([key, sessions])=>{
+  sessions.sort((a,b)=>b.date-a.date);
+
+  const total = sessions.reduce((sum,s)=>sum+s.total,0);
+  const correct = sessions.reduce((sum,s)=>sum+s.correct,0);
+  const pct = total ? Math.round(correct/total*100) : 0;
+
+  const day = document.createElement('div');
+  day.className = 'historyDay';
+
+  const [y,m,d] = key.split('-');
+
+  day.innerHTML =
+    '<div class="historyDayHead">' +
+      '<span class="historyDate">'+Number(y)+'年'+Number(m)+'月'+Number(d)+'日</span>' +
+      '<span class="historySummary">'+total+'問・'+pct+'%</span>' +
+    '</div>';
+
+  sessions.forEach(s=>{
+    const row = document.createElement('div');
+    row.className = 'historySession';
+
+    const time = s.date.toLocaleTimeString(
+      'ja-JP',
+      {hour:'2-digit',minute:'2-digit'}
+    );
+
+    row.innerHTML =
+      '<span class="historyMode">'+
+        time+'・'+escapeHtmlHistory(s.mode)+
+      '</span>' +
+      '<span class="historyScore">'+
+        s.correct+'/'+s.total+'・'+
+        (s.total ? Math.round(s.correct/s.total*100) : 0)+'%'+
+      '</span>';
+
+    day.appendChild(row);
+  });
+
+  wrap.appendChild(day);
+});
+
+// 8日以上前
+if(olderDays.length > 0){
+
+  let oldTotal = 0;
+  let oldCorrect = 0;
+  let oldSessions = 0;
+
+  olderDays.forEach(([key, sessions])=>{
+    sessions.forEach(s=>{
+      oldTotal += s.total;
+      oldCorrect += s.correct;
+      oldSessions++;
     });
+  });
+
+  const oldPct = oldTotal
+    ? Math.round(oldCorrect / oldTotal * 100)
+    : 0;
+
+  const oldDay = document.createElement('div');
+  oldDay.className = 'historyDay';
+
+  oldDay.innerHTML =
+    '<div class="historyDayHead">' +
+      '<span class="historyDate">それ以前の学習</span>' +
+      '<span class="historySummary">'+
+        oldSessions+'回・'+oldTotal+'問・'+oldPct+'%'+
+      '</span>' +
+    '</div>';
+
+  wrap.appendChild(oldDay);
+}
+
   }catch(e){
     console.error('学習履歴の読み込みに失敗:', e);
     wrap.innerHTML = '<div class="historyEmpty">学習履歴を読み込めませんでした。</div>';
