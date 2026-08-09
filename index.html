@@ -794,14 +794,32 @@ async function loadProgress(){
   refreshChapterButtons();
 }
 
-function recordResult(q, correct){
+async function recordResult(q, correct){
   if(correct) missedSet.delete(q.num);
   else missedSet.add(q.num);
   saveMissed();
 
+  async function recordResult(q, correct){
+  if(correct) missedSet.delete(q.num);
+  else missedSet.add(q.num);
+
+  saveMissed();
+
   if(window.saveAnswer){
-    window.saveAnswer(q, correct);
+    await window.saveAnswer(q, correct);
+
+    const scores = await window.getRecentScores();
+    recentScores = scores;
+
+    const recent = recentScores[q.num];
+    const rateEl = document.getElementById('qRate');
+
+    if(recent){
+      rateEl.textContent =
+        '正答率：' + recent.rate + '%（最新' + recent.total + '回）';
+    }
   }
+}
 }
 
 function showBigMark(correct){
