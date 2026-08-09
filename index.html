@@ -119,6 +119,7 @@
   font-size: 12px;
   color: var(--muted);
   margin: 8px 0 10px;
+  display: none;
 }
 </style>
 </head>
@@ -1110,11 +1111,15 @@ if(recent){
       const b = document.createElement('button');
       b.className = 'choice';
       b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-      b.addEventListener('click', ()=>selectMc(i));
+      b.addEventListener('click', ()=>selectMc(originalIndex));
       wrap.appendChild(b);
     });
   } else if(q.type === 'ms'){
-    q.choices.forEach((choice, i)=>{
+    const shuffledChoices = shuffle(
+  q.choices.map((choice, i) => ({ choice, originalIndex: i }))
+);
+
+shuffledChoices.forEach(({ choice, originalIndex })=>{
       const b = document.createElement('button');
       b.className = 'choice';
       b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
