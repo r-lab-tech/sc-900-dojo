@@ -756,7 +756,7 @@ function recordResult(q, correct){
   saveMissed();
 
   if(window.saveAnswer){
-    window.saveAnswer(q.num, correct);
+    window.saveAnswer(q, correct);
   }
 }
 
@@ -1056,10 +1056,11 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  
-  window.saveAnswer = async function(questionId, correct){
+
+  window.saveAnswer = async function(q, correct){
   const docRef = await addDoc(collection(db, "answers"), {
-    questionId: questionId,
+    questionId: q.num,
+    chapter: q.ch,
     correct: correct,
     createdAt: new Date()
   });
