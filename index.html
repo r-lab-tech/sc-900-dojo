@@ -1039,7 +1039,7 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -1057,6 +1057,22 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  async function loadMissedFromFirebase(){
+    const snapshot = await getDocs(collection(db, "answers"));
+
+    missedSet = new Set();
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      if(data.correct === false){
+        missedSet.add(data.questionId);
+      }
+    });
+
+    updateReviewButton();
+  }
+
   window.saveAnswer = async function(q, correct){
   const docRef = await addDoc(collection(db, "answers"), {
     questionId: q.num,
@@ -1067,6 +1083,7 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
 
   console.log("回答を保存しました:", docRef.id);
 };
+loadMissedFromFirebase();
 </script>
 </body>
 </html>
