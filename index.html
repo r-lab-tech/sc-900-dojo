@@ -1058,7 +1058,7 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function saveStudySession(){
+  window.saveStudySession = async function(){
   try{
     await addDoc(collection(db, "studySessions"), {
       mode: sessionLabel,
