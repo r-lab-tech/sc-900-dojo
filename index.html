@@ -163,7 +163,12 @@
   <button class="domainbtn countbtn" data-count="20">20問</button>
   <button class="domainbtn countbtn" data-count="30">30問</button>
 </div>
-    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
+
+<button id="startModeBtn" class="domainbtn" style="width:100%;margin-bottom:20px;">
+  この条件で開始
+</button>
+
+  <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
     <button class="domainbtn" data-ch="ALL"><span><b>全章ミックス</b></span><span class="count" id="cnt-ALL"></span></button>
     <button class="domainbtn" data-ch="1"><span><b>第1章</b> セキュリティ・コンプライアンス・IDの概念</span><span class="count" id="cnt-1"></span></button>
     <button class="domainbtn" data-ch="2"><span><b>第2章</b> Microsoft Entra ID</span><span class="count" id="cnt-2"></span></button>
@@ -934,6 +939,57 @@ document.querySelectorAll('.countbtn').forEach(btn=>{
     btn.classList.add('active');
     questionCount = Number(btn.dataset.count);
   });
+});
+
+document.getElementById('startModeBtn').addEventListener('click', ()=>{
+  if(questionMode === 'normal'){
+    alert('通常モードは下の章を選んでください');
+    return;
+  }
+
+  if(questionMode === 'random'){
+    pool = shuffle(QUESTIONS);
+  }
+
+  if(questionMode === 'weak'){
+    pool = shuffle(
+      QUESTIONS.filter(q=>{
+        const s = recentScores[q.num];
+        return s && s.rate >= 34 && s.rate <= 66;
+      })
+    );
+  }
+
+  if(questionMode === 'veryWeak'){
+    pool = shuffle(
+      QUESTIONS.filter(q=>{
+        const s = recentScores[q.num];
+        return s && s.rate <= 33;
+      })
+    );
+  }
+
+  pool = pool.slice(0, questionCount);
+
+  idx = 0;
+  score = 0;
+  chStats = {};
+  ['1','2','3','4','5','6'].forEach(
+    k => chStats[k] = {correct:0,total:0}
+  );
+
+  sessionLabel =
+    questionMode === 'random' ? 'ランダム'
+    : questionMode === 'weak' ? '苦手'
+    : '大苦手';
+
+  saveSession();
+
+  document.getElementById('selectScreen').classList.add('hide');
+  document.getElementById('resultScreen').classList.add('hide');
+  document.getElementById('quizScreen').classList.remove('hide');
+
+  renderQuestion();
 });
 
 document.querySelectorAll('.domainbtn[data-ch]').forEach(btn=>{
