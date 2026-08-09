@@ -1107,7 +1107,11 @@ if(recent){
   document.getElementById('nextBtn').style.display = 'none';
 
   if(q.type === 'mc'){
-    q.choices.forEach((choice, i)=>{
+    const shuffledChoices = shuffle(
+  q.choices.map((choice, i) => ({ choice, originalIndex: i }))
+);
+
+shuffledChoices.forEach(({ choice, originalIndex })=>{
       const b = document.createElement('button');
       b.className = 'choice';
       b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
@@ -1123,7 +1127,7 @@ shuffledChoices.forEach(({ choice, originalIndex })=>{
       const b = document.createElement('button');
       b.className = 'choice';
       b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-      b.addEventListener('click', ()=>toggleMs(i, b));
+      b.addEventListener('click', ()=>toggleMs(originalIndex, b));
       wrap.appendChild(b);
     });
     const sub = document.getElementById('submitBtn');
