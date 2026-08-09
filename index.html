@@ -143,6 +143,16 @@
   </div>
 
   <div class="card" id="selectScreen">
+    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">
+  出題モード
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;">
+  <button class="domainbtn modebtn active" data-mode="normal">通常</button>
+  <button class="domainbtn modebtn" data-mode="weak">苦手</button>
+  <button class="domainbtn modebtn" data-mode="veryWeak">大苦手</button>
+  <button class="domainbtn modebtn" data-mode="random">ランダム</button>
+</div>
     <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
     <button class="domainbtn" data-ch="ALL"><span><b>全章ミックス</b></span><span class="count" id="cnt-ALL"></span></button>
     <button class="domainbtn" data-ch="1"><span><b>第1章</b> セキュリティ・コンプライアンス・IDの概念</span><span class="count" id="cnt-1"></span></button>
@@ -731,6 +741,9 @@ const QUESTIONS = [
 let pool = [];
 let idx = 0;
 let score = 0;
+
+let questionMode = 'normal';
+let questionCount = 10;
 let chStats = {};
 let curAnswer = null;
 let curTfAnswers = [];
@@ -880,7 +893,18 @@ function shuffle(arr){
   return a;
 }
 
-document.querySelectorAll('.domainbtn').forEach(btn=>{
+document.querySelectorAll('.modebtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.modebtn').forEach(b=>{
+      b.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+    questionMode = btn.dataset.mode;
+  });
+});
+
+document.querySelectorAll('.domainbtn[data-ch]').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const ch = btn.dataset.ch;
     pool = shuffle(ch==='ALL' ? QUESTIONS : QUESTIONS.filter(q=>q.ch===ch));
