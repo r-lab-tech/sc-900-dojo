@@ -1032,5 +1032,24 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   document.getElementById('selectScreen').classList.remove('hide');
 });
 </script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBrw5F4pX22_NipbBxTn7e_luaclNO2ZM8",
+    authDomain: "sc-900-dojo.firebaseapp.com",
+    projectId: "sc-900-dojo",
+    storageBucket: "sc-900-dojo.firebasestorage.app",
+    messagingSenderId: "516119030325",
+    appId: "1:516119030325:web:9253e3348d8d5b1b701f7c"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
