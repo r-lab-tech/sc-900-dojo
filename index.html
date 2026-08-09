@@ -1058,20 +1058,31 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   const db = getFirestore(app);
 
   async function loadMissedFromFirebase(){
-    const snapshot = await getDocs(collection(db, "answers"));
+  const snapshot = await getDocs(collection(db, "answers"));
 
-    missedSet = new Set();
+  const latestAnswers = new Map();
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const id = data.questionId;
 
-      if(data.correct === false){
-        missedSet.add(data.questionId);
-      }
-    });
+    const current = latestAnswers.get(id);
 
-    updateReviewButton();
-  }
+    if(!current || data.createdAt.toMillis() > current.createdAt.toMillis()){
+      latestAnswers.set(id, data);
+    }
+  });
+
+  missedSet = new Set();
+
+  latestAnswers.forEach(data => {
+    if(data.correct === false){
+      missedSet.add(data.questionId);
+    }
+  });
+
+  updateReviewButton();
+}
 
   window.saveAnswer = async function(q, correct){
   const docRef = await addDoc(collection(db, "answers"), {
