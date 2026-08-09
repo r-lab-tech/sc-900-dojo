@@ -62,6 +62,20 @@
   .brfill{height:100%;border-radius:99px;}
   .retrybtn{width:100%;margin-top:14px;background:transparent;color:var(--text);border:1px solid var(--line);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;padding:13px;border-radius:12px;cursor:pointer;}
   .hide{display:none;}
+  .historybtn{width:100%;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,#1B2940,#141B2E);border:1px solid #3B587D;color:var(--text);border-radius:12px;padding:14px 16px;margin-bottom:10px;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;}
+  .historybtn b{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .historyCard{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:16px;}
+  .historyDay{border-bottom:1px solid var(--line);padding:14px 0;}
+  .historyDay:first-child{padding-top:0;}
+  .historyDay:last-child{border-bottom:none;padding-bottom:0;}
+  .historyDayHead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px;}
+  .historyDate{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;}
+  .historyTotal{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+  .historySession{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;font-size:12.5px;}
+  .historyMode{color:var(--text);min-width:0;}
+  .historyScore{font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap;}
+  .historyEmpty{text-align:center;color:var(--muted);font-size:13px;padding:18px 0;}
+  .historyBack{width:100%;margin-top:14px;background:transparent;color:var(--text);border:1px solid var(--line);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;padding:13px;border-radius:12px;cursor:pointer;}
 
   .domainbtn{transition:border-color .15s, background .15s;}
   .domainbtn .pct{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;margin-left:7px;white-space:nowrap;}
@@ -111,6 +125,14 @@
   <button class="resumebtn hide" id="resumeBtn"><span><b>▶️ 前回の続きから再開</b><span class="sub2" id="resumeSub"></span></span></button>
 
   <button class="reviewbtn disabled" id="reviewBtn"><span><b>❌ 苦手問題だけ復習</b></span><span class="count" id="reviewCount">なし</span></button>
+
+  <button class="historybtn" id="historyBtn"><span><b>📊 学習履歴</b><span style="display:block;font-size:11px;color:var(--muted);margin-top:3px;">1日の学習をまとめて確認</span></span><span>→</span></button>
+
+  <div class="historyCard hide" id="historyScreen">
+    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">📊 学習履歴</div>
+    <div id="historyWrap"><div class="historyEmpty">読み込み中…</div></div>
+    <button class="historyBack" id="historyBackBtn">← 問題を選ぶ</button>
+  </div>
 
   <div class="card" id="selectScreen">
     <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">章を選ぶ</div>
@@ -1032,6 +1054,17 @@ function showResults(){
   checkAchievement();
 }
 
+document.getElementById('historyBtn').addEventListener('click', async ()=>{
+  document.getElementById('selectScreen').classList.add('hide');
+  document.getElementById('historyScreen').classList.remove('hide');
+  await window.loadStudyHistory();
+});
+
+document.getElementById('historyBackBtn').addEventListener('click', ()=>{
+  document.getElementById('historyScreen').classList.add('hide');
+  document.getElementById('selectScreen').classList.remove('hide');
+});
+
 document.getElementById('retryBtn').addEventListener('click', ()=>{
   document.getElementById('resultScreen').classList.add('hide');
   document.getElementById('selectScreen').classList.remove('hide');
@@ -1072,6 +1105,69 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   }catch(e){
     console.error("学習履歴の保存に失敗:", e);
   }
+}
+
+  window.loadStudyHistory = async function(){
+  const wrap = document.getElementById('historyWrap');
+  wrap.innerHTML = '<div class="historyEmpty">読み込み中…</div>';
+
+  try{
+    const snapshot = await getDocs(collection(db, 'studySessions'));
+    const days = new Map();
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if(!data.createdAt) return;
+      const date = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+      if(Number.isNaN(date.getTime())) return;
+
+      const key = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+      if(!days.has(key)) days.set(key, []);
+      days.get(key).push({
+        mode: data.mode || '学習',
+        total: Number(data.total) || 0,
+        correct: Number(data.correct) || 0,
+        score: Number(data.score) || 0,
+        date
+      });
+    });
+
+    const sortedDays = Array.from(days.entries()).sort((a,b)=>b[0].localeCompare(a[0]));
+
+    if(sortedDays.length === 0){
+      wrap.innerHTML = '<div class="historyEmpty">まだ学習履歴はありません。</div>';
+      return;
+    }
+
+    wrap.innerHTML = '';
+    sortedDays.forEach(([key, sessions])=>{
+      sessions.sort((a,b)=>b.date-a.date);
+      const total = sessions.reduce((sum,s)=>sum+s.total,0);
+      const correct = sessions.reduce((sum,s)=>sum+s.correct,0);
+      const pct = total ? Math.round(correct/total*100) : 0;
+
+      const day = document.createElement('div');
+      day.className = 'historyDay';
+      const [y,m,d] = key.split('-');
+      day.innerHTML = '<div class="historyDayHead"><span class="historyDate">'+y+'年'+Number(m)+'月'+Number(d)+'日</span><span class="historyTotal">'+correct+'/'+total+'問 ・ '+pct+'%</span></div>';
+
+      sessions.forEach(s=>{
+        const row = document.createElement('div');
+        row.className = 'historySession';
+        const time = s.date.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});
+        row.innerHTML = '<span class="historyMode">'+time+' ・ '+escapeHtmlHistory(s.mode)+'</span><span class="historyScore">'+s.correct+'/'+s.total+' ・ '+s.score+'%</span>';
+        day.appendChild(row);
+      });
+      wrap.appendChild(day);
+    });
+  }catch(e){
+    console.error('学習履歴の読み込みに失敗:', e);
+    wrap.innerHTML = '<div class="historyEmpty">学習履歴を読み込めませんでした。</div>';
+  }
+}
+
+function escapeHtmlHistory(value){
+  return String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[ch]));
 }
 
   async function loadMissedFromFirebase(){
