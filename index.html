@@ -1011,7 +1011,10 @@ if(questionMode === 'weak'){
   pool = shuffle(
     QUESTIONS.filter(q => {
       const s = recentScores[q.num];
-      return s && s.rate >= 34 && s.rate <= 66;
+      return s
+        && typeof s.rate === 'number'
+        && s.rate >= 34
+        && s.rate <= 66;
     })
   );
 }
@@ -1020,7 +1023,9 @@ if(questionMode === 'veryWeak'){
   pool = shuffle(
     QUESTIONS.filter(q => {
       const s = recentScores[q.num];
-      return s && s.rate <= 33;
+      return s
+        && typeof s.rate === 'number'
+        && s.rate <= 33;
     })
   );
 }
