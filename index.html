@@ -1026,6 +1026,7 @@ function showResults(){
     if(bestScores[k]===undefined || p > bestScores[k]){ bestScores[k] = p; changed = true; }
   });
   if(changed) saveBestScores();
+  saveStudySession();
   clearSession();
   refreshChapterButtons();
   checkAchievement();
@@ -1056,6 +1057,22 @@ document.getElementById('retryBtn').addEventListener('click', ()=>{
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  async function saveStudySession(){
+  try{
+    await addDoc(collection(db, "studySessions"), {
+      mode: sessionLabel,
+      total: pool.length,
+      correct: score,
+      score: Math.round(score / pool.length * 100),
+      createdAt: new Date()
+    });
+
+    console.log("学習履歴を保存しました");
+  }catch(e){
+    console.error("学習履歴の保存に失敗:", e);
+  }
+}
 
   async function loadMissedFromFirebase(){
   const snapshot = await getDocs(collection(db, "answers"));
