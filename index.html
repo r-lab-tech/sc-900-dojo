@@ -112,13 +112,16 @@
   .achieveCard h2{font-family:'Space Grotesk',sans-serif;font-size:20px;margin:0 0 8px;}
   .achieveCard p{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 18px;}
   .achieveCard button{background:#FBBF24;color:#241a02;border:none;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;padding:11px 22px;border-radius:10px;cursor:pointer;}
+#homeTitle {
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="hdr">
     <div class="eyebrow">SC-900 対策 &middot; 参考書ベース問題集</div>
-    <h1>実践問題集(第1〜6章)</h1>
+    <h1 id="homeTitle">実践問題集(第1〜6章)</h1>
     <div class="sub">全89問。各選択肢に「なぜ正しい/違うか」の解説付き。章ごとに絞って解けます。</div>
   </div>
 
@@ -1068,6 +1071,9 @@ document.getElementById('historyBackBtn').addEventListener('click', ()=>{
 document.getElementById('retryBtn').addEventListener('click', ()=>{
   document.getElementById('resultScreen').classList.add('hide');
   document.getElementById('selectScreen').classList.remove('hide');
+});
+document.getElementById('homeTitle').addEventListener('click', () => {
+  location.reload();
 });
 </script>
 <script type="module">
