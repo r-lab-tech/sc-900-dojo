@@ -1842,6 +1842,26 @@ window.getCoverage = async function(){
   }
 };
 
+window.openCoverageQuestion = function(num){
+  const q = QUESTIONS.find(q => q.num === num);
+  if(!q) return;
+
+  pool = [q];
+  idx = 0;
+  score = 0;
+  chStats = {};
+  ['1','2','3','4','5','6'].forEach(k=>{
+    chStats[k] = {correct:0,total:0};
+  });
+
+  sessionLabel = '網羅度から復習';
+
+  document.getElementById('coverageScreen').classList.add('hide');
+  document.getElementById('quizScreen').classList.remove('hide');
+
+  renderQuestion();
+};
+
 window.renderCoverage = async function(){
   const answered = new Set(await window.getCoverage());
 
@@ -1863,13 +1883,40 @@ window.renderCoverage = async function(){
     const chPct = Math.round(doneCount / qs.length * 100);
 
     const row = document.createElement('div');
-    row.className = 'historyCard';
-    row.innerHTML = `
-      <b>第${ch}章</b>
-      <span style="float:right">${doneCount} / ${qs.length}問　${chPct}%</span>
-    `;
+row.className = 'historyCard';
 
-    wrap.appendChild(row);
+row.innerHTML = `
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <b>第${ch}章</b>
+    <span>${doneCount} / ${qs.length}問　${chPct}%</span>
+  </div>
+  <div class="coverageQuestions"></div>
+`;
+
+const qWrap = row.querySelector('.coverageQuestions');
+
+qs.forEach(q=>{
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.style.cssText =
+    'display:flex;width:100%;justify-content:space-between;' +
+    'align-items:center;padding:8px 10px;margin:4px 0;' +
+    'border:1px solid #D8E0EE;border-radius:8px;' +
+    'background:' + (answered.has(q.num) ? '#E8F7EE' : '#F7F9FC') + ';' +
+    'cursor:pointer;text-align:left;';
+
+  btn.innerHTML =
+    '<span>問'+q.num+'</span>' +
+    '<span>'+(answered.has(q.num) ? '✓ 網羅済み' : '未回答')+'</span>';
+
+  btn.addEventListener('click', ()=>{
+  window.openCoverageQuestion(q.num);
+});
+
+qWrap.appendChild(btn);
+});
+
+wrap.appendChild(row);
   });
 }
 loadRecentScores();
