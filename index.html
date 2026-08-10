@@ -1483,27 +1483,32 @@ async function showResults(){
   checkAchievement();
 }
 
-document.getElementById('historyBtn').addEventListener('click', async ()=>{
+function showOnlyScreen(screenId){
   document.getElementById('selectScreen').classList.add('hide');
-  document.getElementById('historyScreen').classList.remove('hide');
+  document.getElementById('historyScreen').classList.add('hide');
+  document.getElementById('coverageScreen').classList.add('hide');
+  document.getElementById('quizScreen').classList.add('hide');
+  document.getElementById('resultScreen').classList.add('hide');
+
+  document.getElementById(screenId).classList.remove('hide');
+}
+
+document.getElementById('historyBtn').addEventListener('click', async ()=>{
+  showOnlyScreen('historyScreen');
   await window.loadStudyHistory();
 });
 
 document.getElementById('coverageBtn').addEventListener('click', async ()=>{
-  document.getElementById('selectScreen').classList.add('hide');
-  document.getElementById('coverageScreen').classList.remove('hide');
-
+  showOnlyScreen('coverageScreen');
   await window.renderCoverage();
 });
 
 document.getElementById('coverageBackBtn').addEventListener('click', ()=>{
-  document.getElementById('coverageScreen').classList.add('hide');
-  document.getElementById('selectScreen').classList.remove('hide');
+  showOnlyScreen('selectScreen');
 });
 
 document.getElementById('historyBackBtn').addEventListener('click', ()=>{
-  document.getElementById('historyScreen').classList.add('hide');
-  document.getElementById('selectScreen').classList.remove('hide');
+  showOnlyScreen('selectScreen');
 });
 
 document.getElementById('retryBtn').addEventListener('click', ()=>{
