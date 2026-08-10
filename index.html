@@ -1921,37 +1921,42 @@ function showCoverageChapter(ch, results){
 
   qs.forEach(q => {
 
-    const answers = results[q.num] || [];
+  const answers = results[q.num] || [];
 
-    const row = document.createElement('div');
+  const row = document.createElement('div');
 
-    row.style.cssText = `
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:10px 12px;
-      margin-bottom:6px;
-      border:1px solid #D8E0EE;
-      border-radius:9px;
-      background:#fff;
-    `;
+  row.style.cssText = `
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    margin-bottom:6px;
+    border:1px solid #D8E0EE;
+    border-radius:9px;
+    background:#fff;
+    cursor:pointer;
+  `;
 
-    const marks = answers.map(v =>
-      `<span style="
-        display:inline-block;
-        margin-left:5px;
-        font-weight:700;
-        color:${v ? '#22A06B' : '#E85D75'};
-      ">${v ? '○' : '×'}</span>`
-    ).join('');
+  const marks = answers.map(v =>
+    `<span style="
+      display:inline-block;
+      margin-left:5px;
+      font-weight:700;
+      color:${v ? '#22A06B' : '#E85D75'};
+    ">${v ? '○' : '×'}</span>`
+  ).join('');
 
-    row.innerHTML = `
-      <span>問${q.num}</span>
-      <span>${marks || '—'}</span>
-    `;
+  row.innerHTML = `
+    <span>問${q.num}</span>
+    <span>${marks || '—'}</span>
+  `;
 
-    wrap.appendChild(row);
+  row.addEventListener('click', () => {
+    window.openCoverageQuestion(q.num);
   });
+
+  wrap.appendChild(row);
+});
 
   document
     .getElementById('coverageChapterBack')
