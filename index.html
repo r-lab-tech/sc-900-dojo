@@ -1055,7 +1055,7 @@ document.getElementById('startModeBtn').addEventListener('click', async ()=>{
 });
 
 document.querySelectorAll('.domainbtn[data-ch]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
+  btn.addEventListener('click', async ()=>{
     const ch = btn.dataset.ch;
     if(questionMode === 'normal'){
   pool = shuffle(
