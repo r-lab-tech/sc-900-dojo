@@ -1178,7 +1178,7 @@ shuffledChoices.forEach(({ choice, originalIndex })=>{
   b.className = 'choice';
   b.dataset.originalIndex = originalIndex;
   b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-  b.addEventListener('click', ()=>toggleMs(originalIndex, b));
+  b.addEventListener('click', ()=>selectMc(originalIndex));
   wrap.appendChild(b);
 });
   } else if(q.type === 'ms'){
@@ -1191,7 +1191,7 @@ shuffledChoices.forEach(({ choice, originalIndex })=>{
   b.className = 'choice';
   b.dataset.originalIndex = originalIndex;
   b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-  b.addEventListener('click', ()=>toggleMs(originalIndex, b));
+  b.addEventListener('click', ()=>selectMc(originalIndex));
   wrap.appendChild(b);
 });
     const sub = document.getElementById('submitBtn');
@@ -1239,12 +1239,6 @@ function selectMc(i){
   showBigMark(correct);
   recordResult(q, correct);
 
-  document.getElementById('nextBtn').style.display = 'block';
-}
-  chStats[q.ch].total++;
-  if(correct){ score++; chStats[q.ch].correct++; }
-  showBigMark(correct);
-  recordResult(q, correct);
   document.getElementById('nextBtn').style.display = 'block';
 }
 
