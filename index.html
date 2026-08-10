@@ -1481,6 +1481,18 @@ document.getElementById('historyBtn').addEventListener('click', async ()=>{
   await window.loadStudyHistory();
 });
 
+document.getElementById('coverageBtn').addEventListener('click', async ()=>{
+  document.getElementById('selectScreen').classList.add('hide');
+  document.getElementById('coverageScreen').classList.remove('hide');
+
+  await renderCoverage();
+});
+
+document.getElementById('coverageBackBtn').addEventListener('click', ()=>{
+  document.getElementById('coverageScreen').classList.add('hide');
+  document.getElementById('selectScreen').classList.remove('hide');
+});
+
 document.getElementById('historyBackBtn').addEventListener('click', ()=>{
   document.getElementById('historyScreen').classList.add('hide');
   document.getElementById('selectScreen').classList.remove('hide');
@@ -1816,6 +1828,37 @@ window.getCoverage = async function(){
     return [];
   }
 };
+
+async function renderCoverage(){
+  const answered = new Set(await window.getCoverage());
+
+  const total = QUESTIONS.length;
+  const done = answered.size;
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById('coverageSummary').innerHTML =
+    `<b>${done} / ${total}問</b>　${pct}%`;
+
+  const wrap = document.getElementById('coverageWrap');
+  wrap.innerHTML = '';
+
+  ['1','2','3','4','5','6'].forEach(ch => {
+    const qs = QUESTIONS.filter(q => q.ch === ch);
+    if(!qs.length) return;
+
+    const doneCount = qs.filter(q => answered.has(q.num)).length;
+    const chPct = Math.round(doneCount / qs.length * 100);
+
+    const row = document.createElement('div');
+    row.className = 'historyCard';
+    row.innerHTML = `
+      <b>第${ch}章</b>
+      <span style="float:right">${doneCount} / ${qs.length}問　${chPct}%</span>
+    `;
+
+    wrap.appendChild(row);
+  });
+}
 loadRecentScores();
 loadMissedFromFirebase();
 loadProgress();
