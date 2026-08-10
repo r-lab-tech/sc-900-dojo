@@ -822,26 +822,14 @@ async function saveBestScores(){
 async function saveMissed(){
   try{ await window.storage.set('sc900-missed', JSON.stringify(Array.from(missedSet)), false); }catch(e){}
 }
-async function saveSession(){
-  const s = {
-    label: sessionLabel,
-    nums: pool.map(q=>q.num),
-    idx,
-    score,
-    chStats
-  };
 
-  try{
-    await window.storage.set('sc900-session', JSON.stringify(s), false);
-  }catch(e){}
-}
 
 async function clearSession(){
   savedSession = null;
 
-  try{
-    await window.storage.delete('sc900-session', false);
-  }catch(e){}
+  if(window.deleteCurrentSession){
+  await window.deleteCurrentSession();
+}
 
   updateResumeButton();
 }
@@ -867,13 +855,12 @@ async function loadProgress(){
   }catch(e){}
 
   try{
-    const r3 = await window.storage.get('sc900-session', false);
-    if(r3 && r3.value){
-      savedSession = JSON.parse(r3.value);
-    }
-  }catch(e){
-    console.error('途中セッションの読み込みに失敗:', e);
+  if(window.loadCurrentSession){
+    savedSession = await window.loadCurrentSession();
   }
+}catch(e){
+  console.error('途中セッションの読み込みに失敗:', e);
+}
 
   refreshChapterButtons();
 }
@@ -953,7 +940,6 @@ function refreshChapterButtons(){
   updateResumeButton();
 }
 refreshChapterButtons();
-loadProgress();
 
 function shuffle(arr){
   const a = arr.slice();
@@ -1417,6 +1403,39 @@ document.getElementById('homeTitle').addEventListener('click', () => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  window.saveCurrentSession = async function(s){
+  try{
+    await setDoc(doc(db, 'currentSessions', 'sc900'), {
+      ...s,
+      updatedAt: new Date()
+    });
+  }catch(e){
+    console.error('途中セッションの保存に失敗:', e);
+  }
+};
+
+window.loadCurrentSession = async function(){
+  try{
+    const snap = await getDoc(doc(db, 'currentSessions', 'sc900'));
+
+    if(snap.exists()){
+      return snap.data();
+    }
+
+    return null;
+  }catch(e){
+    console.error('途中セッションの読み込みに失敗:', e);
+    return null;
+  }
+};
+
+window.deleteCurrentSession = async function(){
+  try{
+    await deleteDoc(doc(db, 'currentSessions', 'sc900'));
+  }catch(e){
+    console.error('途中セッションの削除に失敗:', e);
+  }
+};
 
   window.saveStudySession = async function(label, total, correct){
   try{
@@ -1632,6 +1651,7 @@ window.getRecentScores = async function(){
 };
 loadRecentScores();
 loadMissedFromFirebase();
+loadProgress();
 </script>
 </body>
 </html>
