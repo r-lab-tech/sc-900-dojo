@@ -1400,7 +1400,7 @@ document.getElementById('nextBtn').addEventListener('click', async ()=>{
   }
 });
 
-function showResults(){
+async function showResults(){
   document.getElementById('quizScreen').classList.add('hide');
   document.getElementById('resultScreen').classList.remove('hide');
   const pct = Math.round(score/pool.length*100);
