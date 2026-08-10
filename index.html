@@ -1821,25 +1821,52 @@ window.getRecentScores = async function(){
   return scores;
 };
 
+window.getRecentResults = async function(){
+  const snapshot = await getDocs(collection(db, "answers"));
+
+  const grouped = {};
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const id = data.questionId;
+
+    if(!grouped[id]){
+      grouped[id] = [];
+    }
+
+    grouped[id].push(data);
+  });
+
+  const results = {};
+
+  Object.keys(grouped).forEach(id => {
+    results[id] = grouped[id]
+      .sort((a,b) =>
+        b.createdAt.toMillis() - a.createdAt.toMillis()
+      )
+      .slice(0,3)
+      .reverse()
+      .map(a => a.correct === true);
+  });
+
+  return results;
+};
+
 window.getCoverage = async function(){
-  try{
-    const snapshot = await getDocs(collection(db, "answers"));
+  const results = await window.getRecentResults();
 
-    const answered = new Set();
+  const covered = new Set();
 
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if(data.questionId && data.correct === true){
-        answered.add(data.questionId);
-      }
-    });
+  Object.keys(results).forEach(num => {
+    const answers = results[num];
+    const correctCount = answers.filter(v => v === true).length;
 
-    return Array.from(answered);
+    if(correctCount >= 2){
+      covered.add(num);
+    }
+  });
 
-  }catch(e){
-    console.error('網羅度の取得に失敗:', e);
-    return [];
-  }
+  return Array.from(covered);
 };
 
 window.openCoverageQuestion = function(num){
@@ -1862,56 +1889,154 @@ window.openCoverageQuestion = function(num){
   renderQuestion();
 };
 
+function showCoverageChapter(ch, results){
+
+  const wrap = document.getElementById('coverageWrap');
+
+  const qs = QUESTIONS.filter(q => q.ch === ch);
+
+  wrap.innerHTML = `
+    <button
+      id="coverageChapterBack"
+      style="
+        width:100%;
+        padding:10px;
+        margin-bottom:12px;
+        border:1px solid #D8E0EE;
+        border-radius:10px;
+        background:#fff;
+        cursor:pointer;
+      "
+    >
+      ← 章一覧に戻る
+    </button>
+
+    <div style="
+      font-weight:600;
+      margin-bottom:12px;
+    ">
+      第${ch}章
+    </div>
+  `;
+
+  qs.forEach(q => {
+
+    const answers = results[q.num] || [];
+
+    const row = document.createElement('div');
+
+    row.style.cssText = `
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 12px;
+      margin-bottom:6px;
+      border:1px solid #D8E0EE;
+      border-radius:9px;
+      background:#fff;
+    `;
+
+    const marks = answers.map(v =>
+      `<span style="
+        display:inline-block;
+        margin-left:5px;
+        font-weight:700;
+        color:${v ? '#22A06B' : '#E85D75'};
+      ">${v ? '○' : '×'}</span>`
+    ).join('');
+
+    row.innerHTML = `
+      <span>問${q.num}</span>
+      <span>${marks || '—'}</span>
+    `;
+
+    wrap.appendChild(row);
+  });
+
+  document
+    .getElementById('coverageChapterBack')
+    .addEventListener('click', ()=>{
+      window.renderCoverage();
+    });
+}
+
 window.renderCoverage = async function(){
-  const answered = new Set(await window.getCoverage());
 
-  const total = QUESTIONS.length;
-  const done = answered.size;
-  const pct = total ? Math.round(done / total * 100) : 0;
-
-  document.getElementById('coverageSummary').innerHTML =
-    `<b>${done} / ${total}問</b>　${pct}%`;
+  const results = await window.getRecentResults();
+  const covered = new Set(await window.getCoverage());
 
   const wrap = document.getElementById('coverageWrap');
   wrap.innerHTML = '';
 
   ['1','2','3','4','5','6'].forEach(ch => {
+
     const qs = QUESTIONS.filter(q => q.ch === ch);
     if(!qs.length) return;
 
-    const doneCount = qs.filter(q => answered.has(q.num)).length;
-    const chPct = Math.round(doneCount / qs.length * 100);
+    const coveredCount =
+      qs.filter(q => covered.has(q.num)).length;
 
-    const row = document.createElement('div');
-row.className = 'historyCard';
+    const pct = Math.round(
+      coveredCount / qs.length * 100
+    );
 
-row.innerHTML = `
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-    <b>第${ch}章</b>
-    <span>${doneCount} / ${qs.length}問　${chPct}%</span>
-  </div>
-  <div class="coverageQuestions"></div>
-`;
+    const row = document.createElement('button');
 
-const qWrap = row.querySelector('.coverageQuestions');
+    row.type = 'button';
+    row.style.cssText = `
+      width:100%;
+      border:0;
+      background:transparent;
+      padding:0;
+      margin:0 0 12px 0;
+      text-align:left;
+      cursor:pointer;
+    `;
 
-qs.forEach(q=>{
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.style.cssText =
-    'display:flex;width:100%;justify-content:space-between;' +
-    'align-items:center;padding:8px 10px;margin:4px 0;' +
-    'border:1px solid #D8E0EE;border-radius:8px;' +
-    'background:' + (answered.has(q.num) ? '#E8F7EE' : '#F7F9FC') + ';' +
-    'cursor:pointer;text-align:left;';
+    const barColor =
+      pct >= 66 ? '#34D399' : '#93C5FD';
 
-  btn.innerHTML =
-    '<span>問'+q.num+'</span>' +
-    '<span>'+(answered.has(q.num) ? '✓ 網羅済み' : '未回答')+'</span>';
+    row.innerHTML = `
+      <div style="
+        border:1px solid #D8E0EE;
+        border-radius:12px;
+        padding:12px;
+        background:#fff;
+      ">
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:8px;
+        ">
+          <b>第${ch}章</b>
+          <span>${pct}%</span>
+        </div>
 
-  btn.addEventListener('click', ()=>{
-  window.openCoverageQuestion(q.num);
-});
+        <div style="
+          width:100%;
+          height:10px;
+          background:#E8EEF7;
+          border-radius:999px;
+          overflow:hidden;
+        ">
+          <div style="
+            width:${pct}%;
+            height:100%;
+            background:${barColor};
+            border-radius:999px;
+          "></div>
+        </div>
+      </div>
+    `;
+
+    row.addEventListener('click', ()=>{
+      showCoverageChapter(ch, results);
+    });
+
+    wrap.appendChild(row);
+  });
+};
 
 qWrap.appendChild(btn);
 });
