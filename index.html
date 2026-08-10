@@ -1829,7 +1829,7 @@ window.getCoverage = async function(){
   }
 };
 
-async function renderCoverage(){
+window.renderCoverage = async function(){
   const answered = new Set(await window.getCoverage());
 
   const total = QUESTIONS.length;
