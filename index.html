@@ -1462,14 +1462,27 @@ async function showResults(){
 
   let changed = false;
   ['1','2','3','4','5','6'].forEach(k=>{
-    const s = chStats[k];
-    if(!s || s.total===0) return;
-    const p = Math.round(s.correct/s.total*100);
-    if(bestScores[k]===undefined || p > bestScores[k]){ bestScores[k] = p; changed = true; }
-      if(p === 100){
-      chapterClearCounts[k] = (chapterClearCounts[k] || 0) + 1;
-    }
-  });
+  const s = chStats[k];
+  if(!s || s.total===0) return;
+
+  const p = Math.round(s.correct/s.total*100);
+
+  if(bestScores[k]===undefined || p > bestScores[k]){
+    bestScores[k] = p;
+    changed = true;
+  }
+
+  // 章全体を100%解いたときだけ達成回数を加算
+  const chapterQuestions = QUESTIONS.filter(q => q.ch === k);
+
+  const isFullChapter =
+    pool.length === chapterQuestions.length &&
+    pool.every(q => q.ch === k);
+
+  if(isFullChapter && s.correct === chapterQuestions.length){
+    chapterClearCounts[k] = (chapterClearCounts[k] || 0) + 1;
+  }
+});
     
   if(changed) saveBestScores();
     if(window.saveChapterClearCounts){
