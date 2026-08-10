@@ -867,13 +867,11 @@ if(saved){
 }
 
 async function recordResult(q, correct){
-  if(correct) missedSet.delete(q.num);
-  else missedSet.add(q.num);
-  saveMissed();
-
-  async function recordResult(q, correct){
-  if(correct) missedSet.delete(q.num);
-  else missedSet.add(q.num);
+  if(correct){
+    missedSet.delete(q.num);
+  }else{
+    missedSet.add(q.num);
+  }
 
   saveMissed();
 
@@ -891,7 +889,6 @@ async function recordResult(q, correct){
         '正答率：' + recent.rate + '%（最新' + recent.total + '回）';
     }
   }
-}
 }
 
 function showBigMark(correct){
@@ -1177,24 +1174,26 @@ if(recent){
 );
 
 shuffledChoices.forEach(({ choice, originalIndex })=>{
-      const b = document.createElement('button');
-      b.className = 'choice';
-      b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-      b.addEventListener('click', ()=>selectMc(originalIndex));
-      wrap.appendChild(b);
-    });
+  const b = document.createElement('button');
+  b.className = 'choice';
+  b.dataset.originalIndex = originalIndex;
+  b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
+  b.addEventListener('click', ()=>toggleMs(originalIndex, b));
+  wrap.appendChild(b);
+});
   } else if(q.type === 'ms'){
     const shuffledChoices = shuffle(
   q.choices.map((choice, i) => ({ choice, originalIndex: i }))
 );
 
 shuffledChoices.forEach(({ choice, originalIndex })=>{
-      const b = document.createElement('button');
-      b.className = 'choice';
-      b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-      b.addEventListener('click', ()=>toggleMs(originalIndex, b));
-      wrap.appendChild(b);
-    });
+  const b = document.createElement('button');
+  b.className = 'choice';
+  b.dataset.originalIndex = originalIndex;
+  b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
+  b.addEventListener('click', ()=>toggleMs(originalIndex, b));
+  wrap.appendChild(b);
+});
     const sub = document.getElementById('submitBtn');
     sub.style.display = 'block';
     sub.onclick = submitMs;
@@ -1216,12 +1215,32 @@ shuffledChoices.forEach(({ choice, originalIndex })=>{
 function selectMc(i){
   const q = pool[idx];
   const buttons = document.querySelectorAll('#answerWrap .choice');
-  buttons.forEach((b, bi)=>{
+
+  buttons.forEach(b=>{
+    const originalIndex = Number(b.dataset.originalIndex);
+
     b.classList.add('disabled','revealed');
-    if(q.choices[bi].c) b.classList.add('correct');
-    else if(bi===i) b.classList.add('wrong');
+
+    if(q.choices[originalIndex].c){
+      b.classList.add('correct');
+    } else if(originalIndex === i){
+      b.classList.add('wrong');
+    }
   });
+
   const correct = q.choices[i].c;
+
+  chStats[q.ch].total++;
+  if(correct){
+    score++;
+    chStats[q.ch].correct++;
+  }
+
+  showBigMark(correct);
+  recordResult(q, correct);
+
+  document.getElementById('nextBtn').style.display = 'block';
+}
   chStats[q.ch].total++;
   if(correct){ score++; chStats[q.ch].correct++; }
   showBigMark(correct);
@@ -1239,19 +1258,39 @@ function submitMs(){
   const q = pool[idx];
   const buttons = document.querySelectorAll('#answerWrap .choice');
   const selected = curAnswer || new Set();
+
   let allCorrect = true;
-  buttons.forEach((b, bi)=>{
+
+  buttons.forEach(b=>{
+    const originalIndex = Number(b.dataset.originalIndex);
+    const isC = q.choices[originalIndex].c;
+    const isSel = selected.has(originalIndex);
+
     b.classList.add('disabled','revealed');
-    const isC = q.choices[bi].c;
-    const isSel = selected.has(bi);
-    if(isC && isSel) b.classList.add('correct');
-    else if(isC && !isSel){ b.classList.add('correct'); allCorrect = false; }
-    else if(!isC && isSel){ b.classList.add('wrong'); allCorrect = false; }
+
+    if(isC && isSel){
+      b.classList.add('correct');
+    }
+    else if(isC && !isSel){
+      b.classList.add('correct');
+      allCorrect = false;
+    }
+    else if(!isC && isSel){
+      b.classList.add('wrong');
+      allCorrect = false;
+    }
   });
+
   chStats[q.ch].total++;
-  if(allCorrect){ score++; chStats[q.ch].correct++; }
+
+  if(allCorrect){
+    score++;
+    chStats[q.ch].correct++;
+  }
+
   showBigMark(allCorrect);
   recordResult(q, allCorrect);
+
   document.getElementById('submitBtn').style.display = 'none';
   document.getElementById('nextBtn').style.display = 'block';
 }
