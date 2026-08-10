@@ -857,21 +857,21 @@ async function loadProgress(){
     const r = await window.storage.get('sc900-best-scores', false);
     if(r && r.value) bestScores = JSON.parse(r.value);
   }catch(e){}
+
   try{
     const r2 = await window.storage.get('sc900-missed', false);
     if(r2 && r2.value) missedSet = new Set(JSON.parse(r2.value));
   }catch(e){}
+
   try{
-  const r3 = await window.storage.get('sc900-session', false);
-  if(r3 && r3.value){
-    savedSession = JSON.parse(r3.value);
+    const r3 = await window.storage.get('sc900-session', false);
+    if(r3 && r3.value){
+      savedSession = JSON.parse(r3.value);
+    }
+  }catch(e){
+    console.error('途中セッションの読み込みに失敗:', e);
   }
-}catch(e){
-  console.error('途中セッションの読み込みに失敗:', e);
-}
-    localStorage.removeItem('sc900-session');
-  }
-}
+
   refreshChapterButtons();
 }
 
