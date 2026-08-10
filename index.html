@@ -973,20 +973,20 @@ function refreshChapterButtons(){
   'score-blue'
 );
     const best = bestScores[k];
-    let cls = 'score-gray', pctHtml = '';
-    const clearCount = chapterClearCounts[k] || 0;
+let cls = 'score-gray', pctHtml = '';
+const clearCount = chapterClearCounts[k] || 0;
 
+// 達成回数で色を決める
+if(clearCount >= 3){
+  cls = 'score-green';
+}else if(clearCount === 2){
+  cls = 'score-blue';
+}else if(clearCount === 1){
+  cls = 'score-lightblue';
+}
+
+// 正答率があれば表示
 if(best !== undefined){
-  if(clearCount >= 3){
-    cls = 'score-green';
-  }else if(clearCount === 2){
-    cls = 'score-blue';
-  }else if(clearCount === 1){
-    cls = 'score-lightblue';
-  }else{
-    cls = 'score-gray';
-  }
-
   pctHtml = '<span class="pct">'+best+'%</span>';
 }
     btn.classList.add(cls);
