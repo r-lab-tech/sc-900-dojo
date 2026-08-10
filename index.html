@@ -988,7 +988,7 @@ document.querySelectorAll('.countbtn').forEach(btn=>{
   });
 });
 
-document.getElementById('startModeBtn').addEventListener('click', ()=>{
+document.getElementById('startModeBtn').addEventListener('click', async ()=>{
   if(questionMode === 'normal'){
     alert('通常モードは下の章を選んでください');
     return;
@@ -1097,7 +1097,13 @@ pool = pool.slice(0, questionCount);
     idx = 0; score = 0; chStats = {};
     ['1','2','3','4','5','6'].forEach(k=>chStats[k]={correct:0,total:0});
     sessionLabel = ch==='ALL' ? '全章ミックス' : CH_NAMES[ch];
-    saveSession();
+    await window.saveCurrentSession({
+  nums: pool.map(q => q.num),
+  idx,
+  score,
+  chStats,
+  label: sessionLabel
+});
     document.getElementById('selectScreen').classList.add('hide');
     document.getElementById('resultScreen').classList.add('hide');
     document.getElementById('quizScreen').classList.remove('hide');
@@ -1105,13 +1111,19 @@ pool = pool.slice(0, questionCount);
   });
 });
 
-document.getElementById('reviewBtn').addEventListener('click', ()=>{
+document.getElementById('reviewBtn').addEventListener('click', async ()=>{
   if(missedSet.size === 0) return;
   pool = shuffle(QUESTIONS.filter(q=>missedSet.has(q.num)));
   idx = 0; score = 0; chStats = {};
   ['1','2','3','4','5','6'].forEach(k=>chStats[k]={correct:0,total:0});
   sessionLabel = '苦手問題の復習';
-  saveSession();
+  await window.saveCurrentSession({
+  nums: pool.map(q => q.num),
+  idx,
+  score,
+  chStats,
+  label: sessionLabel
+});
   document.getElementById('selectScreen').classList.add('hide');
   document.getElementById('resultScreen').classList.add('hide');
   document.getElementById('quizScreen').classList.remove('hide');
