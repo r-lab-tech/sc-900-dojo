@@ -1200,7 +1200,7 @@ shuffledChoices.forEach(({ choice, originalIndex })=>{
   b.className = 'choice';
   b.dataset.originalIndex = originalIndex;
   b.innerHTML = '<span class="box"></span><span>'+choice.t+'<div class="cnote">'+choice.n+'</div></span>';
-  b.addEventListener('click', ()=>selectMc(originalIndex));
+  b.addEventListener('click', ()=>toggleMs(originalIndex, b));
   wrap.appendChild(b);
 });
     const sub = document.getElementById('submitBtn');
