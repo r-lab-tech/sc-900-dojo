@@ -1218,9 +1218,7 @@ document.getElementById('reviewBtn').addEventListener('click', async ()=>{
   chStats,
   label: sessionLabel
 });
-  document.getElementById('selectScreen').classList.add('hide');
-  document.getElementById('resultScreen').classList.add('hide');
-  document.getElementById('quizScreen').classList.remove('hide');
+  showOnlyScreen('quizScreen');
   renderQuestion();
 });
 
@@ -1922,6 +1920,7 @@ function showCoverageChapter(ch, results){
   qs.forEach(q => {
 
   const answers = results[q.num] || [];
+  const isCovered = answers.filter(v => v === true).length >= 2;
 
   const row = document.createElement('div');
 
@@ -1931,9 +1930,9 @@ function showCoverageChapter(ch, results){
     align-items:center;
     padding:10px 12px;
     margin-bottom:6px;
-    border:1px solid #D8E0EE;
+    border:1px solid ${isCovered ? '#86EFAC' : '#D8E0EE'};
     border-radius:9px;
-    background:#fff;
+    background:${isCovered ? '#ECFDF3' : '#fff'};
     cursor:pointer;
   `;
 
