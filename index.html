@@ -1039,7 +1039,13 @@ document.getElementById('startModeBtn').addEventListener('click', ()=>{
     : questionMode === 'weak' ? '苦手'
     : '大苦手';
 
-  saveSession();
+  window.saveCurrentSession({
+  nums: pool.map(q => q.num),
+  idx: idx,
+  score: score,
+  chStats: chStats,
+  label: sessionLabel
+});
 
   document.getElementById('selectScreen').classList.add('hide');
   document.getElementById('resultScreen').classList.add('hide');
