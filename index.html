@@ -819,7 +819,7 @@ async function saveBestScores(){
 async function saveMissed(){
   try{ await window.storage.set('sc900-missed', JSON.stringify(Array.from(missedSet)), false); }catch(e){}
 }
-function saveSession(){
+async function saveSession(){
   const s = {
     label: sessionLabel,
     nums: pool.map(q=>q.num),
@@ -828,12 +828,18 @@ function saveSession(){
     chStats
   };
 
-  localStorage.setItem('sc900-session', JSON.stringify(s));
+  try{
+    await window.storage.set('sc900-session', JSON.stringify(s), false);
+  }catch(e){}
 }
 
-function clearSession(){
+async function clearSession(){
   savedSession = null;
-  localStorage.removeItem('sc900-session');
+
+  try{
+    await window.storage.delete('sc900-session', false);
+  }catch(e){}
+
   updateResumeButton();
 }
 function updateResumeButton(){
@@ -855,11 +861,14 @@ async function loadProgress(){
     const r2 = await window.storage.get('sc900-missed', false);
     if(r2 && r2.value) missedSet = new Set(JSON.parse(r2.value));
   }catch(e){}
-  const saved = localStorage.getItem('sc900-session');
-if(saved){
   try{
-    savedSession = JSON.parse(saved);
-  }catch(e){
+  const r3 = await window.storage.get('sc900-session', false);
+  if(r3 && r3.value){
+    savedSession = JSON.parse(r3.value);
+  }
+}catch(e){
+  console.error('途中セッションの読み込みに失敗:', e);
+}
     localStorage.removeItem('sc900-session');
   }
 }
@@ -1379,7 +1388,16 @@ document.getElementById('homeTitle').addEventListener('click', () => {
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+  import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
 
