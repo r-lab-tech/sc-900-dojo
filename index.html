@@ -1485,7 +1485,7 @@ document.getElementById('coverageBtn').addEventListener('click', async ()=>{
   document.getElementById('selectScreen').classList.add('hide');
   document.getElementById('coverageScreen').classList.remove('hide');
 
-  await renderCoverage();
+  await window.renderCoverage();
 });
 
 document.getElementById('coverageBackBtn').addEventListener('click', ()=>{
@@ -1816,7 +1816,7 @@ window.getCoverage = async function(){
 
     snapshot.forEach(doc => {
       const data = doc.data();
-      if(data.questionId){
+      if(data.questionId && data.correct === true){
         answered.add(data.questionId);
       }
     });
