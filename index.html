@@ -1329,10 +1329,19 @@ function selectTf(i, val, row, btns){
   }
 }
 
-document.getElementById('nextBtn').addEventListener('click', ()=>{
+document.getElementById('nextBtn').addEventListener('click', async ()=>{
   idx++;
   if(idx >= pool.length) showResults();
-  else { saveSession(); renderQuestion(); }
+  else {
+    await window.saveCurrentSession({
+      nums: pool.map(q => q.num),
+      idx,
+      score,
+      chStats,
+      label: sessionLabel
+    });
+    renderQuestion();
+  }
 });
 
 function showResults(){
