@@ -111,6 +111,35 @@
   background:linear-gradient(180deg,#EFF6FF,var(--surface2));
 }
   .domainbtn.score-red .pct{background:var(--bad-dim);color:var(--bad);}
+  .domainbtn.score-lightblue{
+  border-color:#93C5FD;
+  background:linear-gradient(180deg,#EFF6FF,var(--surface2));
+}
+
+.domainbtn.score-lightblue .pct{
+  background:#DBEAFE;
+  color:#2563EB;
+}
+
+.domainbtn.score-blue{
+  border-color:#3B82F6;
+  background:linear-gradient(180deg,#DBEAFE,var(--surface2));
+}
+
+.domainbtn.score-blue .pct{
+  background:#BFDBFE;
+  color:#1D4ED8;
+}
+
+.domainbtn.score-green{
+  border-color:#22C55E;
+  background:linear-gradient(180deg,#DCFCE7,var(--surface2));
+}
+
+.domainbtn.score-green .pct{
+  background:#BBF7D0;
+  color:#15803D;
+}
 
   .reviewbtn{width:100%;display:flex;align-items:center;justify-content:space-between;
   background:#FFF1F3;
@@ -798,6 +827,7 @@ let chStats = {};
 let curAnswer = null;
 let curTfAnswers = [];
 let bestScores = {};
+let chapterClearCounts = {};
 
 let missedSet = new Set();
 let celebrated = false;
@@ -848,6 +878,14 @@ async function loadProgress(){
     const r = await window.storage.get('sc900-best-scores', false);
     if(r && r.value) bestScores = JSON.parse(r.value);
   }catch(e){}
+
+  try{
+    if(window.loadChapterClearCounts){
+      chapterClearCounts = await window.loadChapterClearCounts();
+    }
+  }catch(e){
+    console.error('章達成回数の読み込みに失敗:', e);
+  }
 
   try{
     const r2 = await window.storage.get('sc900-missed', false);
@@ -926,13 +964,31 @@ function refreshChapterButtons(){
   document.getElementById('cnt-ALL').textContent = QUESTIONS.length+'問';
   ['1','2','3','4','5','6'].forEach(k=>{
     const btn = document.querySelector('.domainbtn[data-ch="'+k+'"]');
-    btn.classList.remove('score-gray','score-green','score-yellow','score-red');
+    btn.classList.remove(
+  'score-gray',
+  'score-green',
+  'score-yellow',
+  'score-red',
+  'score-lightblue',
+  'score-blue'
+);
     const best = bestScores[k];
     let cls = 'score-gray', pctHtml = '';
-    if(best !== undefined){
-      cls = best>=100 ? 'score-green' : (best>=80 ? 'score-yellow' : 'score-red');
-      pctHtml = '<span class="pct">'+best+'%</span>';
-    }
+    const clearCount = chapterClearCounts[k] || 0;
+
+if(best !== undefined){
+  if(clearCount >= 3){
+    cls = 'score-green';
+  }else if(clearCount === 2){
+    cls = 'score-blue';
+  }else if(clearCount === 1){
+    cls = 'score-lightblue';
+  }else{
+    cls = 'score-gray';
+  }
+
+  pctHtml = '<span class="pct">'+best+'%</span>';
+}
     btn.classList.add(cls);
     document.getElementById('cnt-'+k).innerHTML = c[k]+'問'+pctHtml;
   });
@@ -1374,8 +1430,15 @@ function showResults(){
     if(!s || s.total===0) return;
     const p = Math.round(s.correct/s.total*100);
     if(bestScores[k]===undefined || p > bestScores[k]){ bestScores[k] = p; changed = true; }
+      if(p === 100){
+      chapterClearCounts[k] = (chapterClearCounts[k] || 0) + 1;
+    }
   });
+    
   if(changed) saveBestScores();
+    if(window.saveChapterClearCounts){
+    await window.saveChapterClearCounts(chapterClearCounts);
+  }
   window.saveStudySession(sessionLabel, pool.length, score);
   clearSession();
   refreshChapterButtons();
@@ -1461,6 +1524,32 @@ window.deleteCurrentSession = async function(){
     await deleteDoc(doc(db, 'currentSessions', 'sc900'));
   }catch(e){
     console.error('途中セッションの削除に失敗:', e);
+  }
+};
+
+window.saveChapterClearCounts = async function(counts){
+  try{
+    await setDoc(doc(db, 'chapterProgress', 'sc900'), {
+      counts: counts,
+      updatedAt: new Date()
+    });
+  }catch(e){
+    console.error('章達成回数の保存に失敗:', e);
+  }
+};
+
+window.loadChapterClearCounts = async function(){
+  try{
+    const snap = await getDoc(doc(db, 'chapterProgress', 'sc900'));
+
+    if(snap.exists()){
+      return snap.data().counts || {};
+    }
+
+    return {};
+  }catch(e){
+    console.error('章達成回数の読み込みに失敗:', e);
+    return {};
   }
 };
 
