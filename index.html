@@ -216,8 +216,21 @@ color:var(--text);
   <span>→</span>
 </button>
 
-  <div class="historyCard hide" id="historyScreen">
-    <div class="historyCard hide" id="coverageScreen">
+<div class="historyCard hide" id="historyScreen">
+  <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">
+    📊 学習履歴
+  </div>
+
+  <div id="historyWrap">
+    <div class="historyEmpty">読み込み中…</div>
+  </div>
+
+  <button class="historyBack" id="historyBackBtn">
+    ← 問題を選ぶ
+  </button>
+</div>
+
+<div class="historyCard hide" id="coverageScreen">
   <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">
     📚 全問の網羅度
   </div>
@@ -228,15 +241,6 @@ color:var(--text);
   <button class="historyBack" id="coverageBackBtn">
     ← 問題を選ぶ
   </button>
-</div>
-    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">📊 学習履歴</div>
-    <div id="historyWrap"><div class="historyEmpty">読み込み中…</div></div>
-    <button class="historyBack" id="historyBackBtn">← 問題を選ぶ</button>
-  </div>
-
-  <div class="card" id="selectScreen">
-    <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:12px;">
-  出題モード
 </div>
 
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;">
